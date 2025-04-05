@@ -10,7 +10,7 @@ lol
 
 💡 Steps to Implement:
 - During OS installation i already separated the `/tmp` to another hard-disk, so now we just need to set `nodev`, `nosuid`, and `noexec` on `/tmp` folder.
-- There is a entry for `/tmp` directory already exits in `/etc/fstab` file, we need to modify them
+- There is a entry for `/tmp` directory already exits in `/etc/fstab` file, we need to modify line
   
   <img src="https://github.com/user-attachments/assets/304fbf92-48b2-49a1-84df-7a9ace7fb97c" alt="df command output" width="650px"></a>
   <br>
