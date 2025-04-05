@@ -53,7 +53,7 @@ chmod +x /tmp/check.sh
   - Note ⚠️
     - The `noexec` mount option is applied to `/tmp`, preventing direct execution of files. However, this restriction can be bypassed by explicitly invoking an interpreter, such as: `bash /tmp/check.sh`
 
-    <img src="[https://github.com/user-attachments/assets/0fd8e98b-28cb-43fb-b489-ea64c8f7a530](https://github.com/user-attachments/assets/1b410621-e583-4e8c-8bdd-7f203060006d)" alt="df command output" width="650px"></a>
+  <img src="https://github.com/user-attachments/assets/1b410621-e583-4e8c-8bdd-7f203060006d" alt="df command output" width="650px"></a>
   <br>    
  - To fully mitigate this risk:
  - Use `AppArmor` or `SELinux` to enforce execution restrictions at the system level.
