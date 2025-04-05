@@ -15,7 +15,7 @@ lol
   <img src="https://github.com/user-attachments/assets/304fbf92-48b2-49a1-84df-7a9ace7fb97c" alt="df command output" width="650px"></a>
   <br>
 
-- Now open `/etc/fstab` file : `nano /etc/fstab`
+- Now open `/etc/fstab` file in editor : `nano /etc/fstab`
 - Add `nodev,nosuid,noexec` in the following line. 
 
   <img src="https://github.com/user-attachments/assets/11dbbca8-dc22-493e-8da3-ebce2d1ae065" alt="df command output" width="650px"></a>
