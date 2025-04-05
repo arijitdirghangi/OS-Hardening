@@ -17,12 +17,13 @@ lol
 - In my case i already created separated the partition `/var`, `/var/log`, `/var/log/audit`, and `/home` into `70GB` hard-disk. <br/>
 - `fdisk -l`- output:
 
- ![image](https://github.com/user-attachments/assets/ed54c9fa-13a2-44f0-9412-27e453ffde2f)
+  <img src="https://github.com/user-attachments/assets/ed54c9fa-13a2-44f0-9412-27e453ffde2f" alt="fdisk command output" width="650px"></a>
+  <br>
 
 - `df -h` command output
 
-![image](https://github.com/user-attachments/assets/ab7efbbb-67fc-4b52-acdd-3000318fa69e)
-
+  <img src="https://github.com/user-attachments/assets/ab7efbbb-67fc-4b52-acdd-3000318fa69e" alt="fdisk command output" width="650px"></a>
+  <br>
 
 `2ND Scenario:` After OS installation manually  partitioned the disk and moved directories like `/home`, `/var`, etc. to separate partitions.
 
