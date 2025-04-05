@@ -9,10 +9,6 @@ lol
 
 💡 Steps to Implement:
 
-1. Identify Available Disks:
-- Use **sudo fdisk -l** to list available disks.
-2. Create Partitions for `/var`, `/var/log`, `/var/log/audit`, and `/home`:
-
 `1ST Scenario:` Create Seprarate partition during OS Installations 💡 <br/>
 - I have taken two hard-disk one for os installation and another for storing specific directory content.
   - 20GB Hard-disk OS Installation.
