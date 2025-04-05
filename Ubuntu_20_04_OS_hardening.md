@@ -6,9 +6,9 @@ lol
 #### Create a separate partition with the `nodev`, `nosuid`, and `noexec` options set for `/tmp`  <br/>
 - Creating a separate partition for `/tmp` with the `nodev`, `nosuid`, and `noexec` options ensures better security by restricting potentially dangerous operations in temporary directories. This can help mitigate the risks associated with untrusted files, as well as prevent certain types of attacks, like privilege escalation and executing malicious code from temporary files.
 
-- nodev: Prevents device files from being created in the "/tmp" directory.
-- nosuid: Prevents the execution of set-user-identifier (SUID) programs in "/tmp".
-- noexec: Prevents the execution of any binaries from the "/tmp" directory.
+- `nodev`: Prevents device files from being created in the "/tmp" directory.
+- `nosuid`: Prevents the execution of set-user-identifier (SUID) programs in "/tmp".
+- `noexec`: Prevents the execution of any binaries from the "/tmp" directory.
 
 💡 Steps to Implement:
 - During OS installation i already separated the `/tmp` to another hard-disk, so now we just need to set `nodev`, `nosuid`, and `noexec` on `/tmp` folder.
