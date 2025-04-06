@@ -39,7 +39,7 @@ sudo ufw status numbered
 #### Set a BIOS/Firmware Password 🔒 <br/>
 - The BIOS/Firmware is a critical component of a system's security. Without proper protection, an attacker with physical access can modify boot settings, reset passwords, or boot from unauthorized devices to compromise the system. Setting a strong BIOS password helps prevent unauthorized access and security bypasses.
 
-💡 Steps to Implement:
+**💡 Steps to Implement:**
 
 1. Access the BIOS/UEFI Setup Menu
     - Each manufacturer uses different keys to enter BIOS. Try pressing one of the following keys during startup
@@ -64,7 +64,7 @@ sudo ufw status numbered
 - To prevent unauthorized access and security bypasses, configure the boot order to restrict booting from external media. This stops attackers from using **live USBs** or CDs to bypass OS security controls.
 
 
-💡 Steps to Implement: <br/>
+**💡 Steps to Implement:** <br/>
 - Disable Boot from External Media <br/>
 - In BIOS settings, go to the Boot or Advanced Boot Options menu. <br/>
 - Disable booting from USB, CD/DVD, and PXE (`Network Boot`). <br/>
@@ -81,7 +81,7 @@ sudo ufw status numbered
 #### Disable USB Usage
 - Disabling USB prevents unauthorized devices from being connected, reducing the risk of malware infection and data theft. This can be done via BIOS/UEFI settings, endpoint security solutions, or manually by blocking USB kernel modules.
 
-💡 Steps to block USB:
+**💡 Steps to block USB:**
 - Check BIOS/UEFI settings for USB disable options.
 - If using endpoint security, we can block USB from AV Policy.
 
@@ -92,7 +92,7 @@ sudo ufw status numbered
 #### Use the latest version  of Ubuntu  
 - Using the latest version of Ubuntu ensures that your system benefits from the latest security patches, bug fixes, and performance improvements. Older versions may lack important security updates and feature enhancements, making them more vulnerable to attacks. 
 
-💡 Steps to Implement:
+**💡 Steps to Implement:**
 
 - Check Current Ubuntu Version:     
    - Run the following command to check your current Ubuntu version: `cat /etc/os-release`
@@ -112,7 +112,7 @@ sudo apt upgrade -y # Upgrade system packages
 - Disabling Ctrl+Alt+Del prevents accidental or forced reboots from the physical console, reducing the risk of unauthorized or unintentional system restarts.
 
 
-💡 Steps for Implementation:
+**💡 Steps for Implementation:**
 ```
 systemctl mask ctrl-alt-del.target # Disable Ctrl+Alt+Del reboot
 ```
@@ -133,7 +133,7 @@ systemctl mask ctrl-alt-del.target # Disable Ctrl+Alt+Del reboot
 - `nosuid`: Prevents the execution of set-user-identifier (SUID) programs in "/tmp".
 - `noexec`: Prevents the execution of any binaries from the "/tmp" directory.
 
-💡 Steps to Implement:
+**💡 Steps to Implement:**
 - During OS installation i already separated the `/tmp` to another hard-disk, so now we just need to set `nodev`, `nosuid`, and `noexec` on `/tmp` folder.
 - There is a entry for `/tmp` directory already exits in `/etc/fstab` file, we need to modify line
   
@@ -185,7 +185,7 @@ chmod +x /tmp/check.sh
 
 ---
 
-`💡 2ND Scenario`
+**`💡 2ND Scenario`**
 If you haven't separated the partitions during OS installations, now you want to separate `/tmp` to different partition, then follow the below steps:
 
 - List your all available disks using: `fdisk -l`
@@ -242,7 +242,7 @@ If you haven't separated the partitions during OS installations, now you want to
 - Creating separate partitions for `/var`, `/var/log`, `/var/log/audit`, and `/home` provides better isolation, security, and management of system resources. These partitions allow for independent management, such as setting appropriate mount options and file system types, which can help protect sensitive data, ensure log retention, and optimize performance. It also prevents one partition from filling up and impacting others.
 
 
-💡 Steps to Implement:
+**💡 Steps to Implement:**
 
 `1ST Scenario:` Create Seprarate partition during OS Installations 💡 <br/>
 - I have taken two hard-disk one for os installation and another for storing specific directory content.
@@ -307,7 +307,7 @@ If you want to apply nodev,nosuid,noexec to both `/tmp` and `/var/tmp`, but keep
 
 <br/>
 
-💡 Steps to Bind Mount `/var/tmp` to `/tmp`:
+**💡 Steps to Bind Mount `/var/tmp` to `/tmp`:**
 - Make sure the  `/var/tmp` directory exists. If it doesn’t, create it: `sudo mkdir -p /var/tmp`.
  
 - Modify `/etc/fstab` to Bind Mount:
@@ -335,7 +335,7 @@ If you want to apply nodev,nosuid,noexec to both `/tmp` and `/var/tmp`, but keep
 #### Set `nodev` option to /home
 - The `nodev` option is used to prevent the mounting of device files in a specific directory. By setting the nodev option on /home, you ensure that no device files (e.g., block or character devices) can be created or accessed within the /home directory. This enhances security by preventing attackers from creating or using device files in user directories.
 
-💡 Steps to Set nodev Option on `/home`:
+**💡 Steps to Set nodev Option on `/home`:**
 - Modify `/etc/fstab`:
     - Edit the `/etc/fstab` file to include the nodev option for the `/home` partition.
     - `sudo nano /etc/fstab`
@@ -363,14 +363,14 @@ The /dev/shm directory is a temporary file storage location in memory (shared me
 - nosuid: Prevents the setuid and setgid bits from taking effect, reducing the risk of privilege escalation through shared memory.
 - noexec: Prevents the execution of binaries in /dev/shm, protecting against malicious code that might be placed in the shared memory.
 
-Why Set These Options?
+**Why Set These Options?**
 
 Security: Protects against attacks like privilege escalation, code execution, and device file creation within shared memory.
 Integrity: Ensures that no untrusted binaries are executed from the memory-backed /dev/shm directory.
 Control: Gives administrators control over what can and cannot be done in /dev/shm.
 
 
-💡 Steps to Set `nodev`, `nosuid`, and `noexec` on `/dev/shm`:
+**💡 Steps to Set `nodev`, `nosuid`, and `noexec` on `/dev/shm`:**
 
 - Modify `/etc/fstab` to Include the Options:
     - Open the `/etc/fstab` file for editing: `sudo nano /etc/fstab`
@@ -460,7 +460,7 @@ find / -type d -perm -0002 -exec sudo chmod +t {} \; 2> /dev/null
 
 <br/>
 
-💡 Steps to configures: 
+**💡 Steps to configures: **
 - Enable Hard and Symlink Protection  
  - Create or modify the system configuration file:  
 ```
@@ -489,7 +489,7 @@ sysctl fs.protected_symlinks
 
 <br/>
 
-Understanding the Settings  
+**💡 Understanding the Settings :**  
 - 'fs.protected_hardlinks = 1'  
   - Prevents unprivileged users from creating hard links to files they do not own.  
 - 'fs.protected_symlinks = 1'  
@@ -511,7 +511,7 @@ Disabling unused or uncommon filesystems reduces the attack surface and prevents
 
 <br/>
 
-💡 Steps to configure:
+**💡 Steps to configure:**
 1. Block Uncommon Filesystems  <br/>
 i) Blacklist the filesystems in `/etc/modprobe.d/blacklist.conf`:  
 ```
