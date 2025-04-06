@@ -555,7 +555,8 @@ find / -type d -perm -0002 -exec sudo chmod +t {} \; 2> /dev/null
 
 <br/>
 
-**💡 Steps to configures: **
+
+**💡 Steps to configures:**
 - Enable Hard and Symlink Protection  
  - Create or modify the system configuration file:  
 ```
