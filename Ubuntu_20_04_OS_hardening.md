@@ -90,14 +90,14 @@ If you haven't separated the partitions during OS installations, now you want to
   <br>
 
 - Mount the New Partition with Security
-- Ensure `/tmp` is empty before mounting
-  - It’s best to clear `/tmp` on `reboot` (this is common practice).
-- Backup current /tmp (just in case):
-  - `sudo cp -a /tmp /tmp_backup`
+  - Ensure `/tmp` is empty before mounting
+    - It’s best to clear `/tmp` on `reboot` (this is common practice).
+  - Backup current /tmp (just in case):
+    - `sudo cp -a /tmp /tmp_backup`
 
-- Create a mount point and mount the partition: `sudo mount /dev/sdaX /tmp` `(Replace X with your partition)`
-- Add the following entry to `/etc/fstab` to ensure the partition is mounted on reboot:
-  - `/dev/sda2    /tmp    ext4    nodev,nosuid,noexec    0    2` `(Replace /dev/sda2 with your partition)`
+  - Create a mount point and mount the partition: `sudo mount /dev/sdaX /tmp` `(Replace X with your partition)`
+  - Add the following entry to `/etc/fstab` to ensure the partition is mounted on reboot:
+    - `/dev/sda2    /tmp    ext4    nodev,nosuid,noexec    0    2` `(Replace /dev/sda2 with your partition)`
 
   <img src="https://github.com/user-attachments/assets/387f5b83-b101-4b7e-b965-2d82c7c02de3" alt="" width="650px"></a>
   <br>
