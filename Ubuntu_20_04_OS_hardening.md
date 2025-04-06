@@ -322,8 +322,8 @@ sudo rsync -aAXv /home/ /mnt/home/
 
 <br/>
 
-**Update /etc/fstab to Persist Mounts:**
- - Add these entries to /etc/fstab:
+**Update `/etc/fstab` to Persist Mounts:**
+ - Add these entries to `/etc/fstab`:
 ```
 /dev/sda1    /var    ext4    defaults    0    2
 /dev/sda2    /var/log    ext4    defaults    0    2
@@ -334,16 +334,30 @@ sudo rsync -aAXv /home/ /mnt/home/
 <br/>
 
 **Verify the Mounts:**
-- After updating /etc/fstab, mount the partitions: sudo mount -a
-- Verify by running: `mount | grep /var`
+- After updating `/etc/fstab`, mount the partitions: `sudo mount -a`
+- Verify by running: `mount | grep /var` OR `df -h`
+
+  <img src="https://github.com/user-attachments/assets/ef8bf710-55d8-477e-98c4-dbd0843ce5dc" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+> **Note ⚠ : If it's shows like these:** 
+```
+root@arijit:~# mount -a
+mount: /var/log/audit: mount point does not exist.
+```
+> It’s show because "audit" not exits under "/var/log/", So we have to create one:
+```
+root@arijit:~# mkdir -p /var/log/audit/
+
+#Now RUN again 
+mount -a
+```
 
 <br/>
 
 
-
-
-
-<br/>
 
 ---- 
 
