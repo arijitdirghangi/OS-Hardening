@@ -1,4 +1,39 @@
-lol
+### Preparation and Installation 🛡️
+
+#### Protecting a Newly Installed Machine from Network Threats 🪲 <br/>
+- When setting up a new system, it is vulnerable to network-based attacks until security configurations are in place. To mitigate this risk, the machine should be isolated from untrusted networks until it is fully installed and hardened.
+
+- We can achive this using router or host based firewall. <br/>
+
+<br/>
+
+**So i have create vm(Ubuntu 20.4) on Hyper-V**
+- We can create a separate switch, which isolates vm from our Host machine network.
+- Another way, we can install an **Host Based firewall** (ex: UFW) and block all incomming connection, Only allow connection from specific host on spcific port.
+
+
+**We’re Using Host Based firewall (`UFW`) to isolate our vm :**
+- Installing UFW (Uncomplicated Firewall)
+    - `apt install ufw -y`
+
+- If we want the VM itself to block incoming/outgoing connections:
+```
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+ufw allow from 192.168.0.118 to any port 22
+sudo ufw enable
+
+# 192.168.0.118 is my Host Machine-Ip
+
+#To Check number of these rules are
+sudo ufw status numbered
+```
+
+  <img src="https://github.com/user-attachments/assets/84a9f6a2-f3bd-4a60-91f2-3f13eda2073e" alt="" width="850px"></a>
+  <br>
+
+- 
+
 
 
 ![---------------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png)
