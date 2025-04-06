@@ -3,11 +3,11 @@
 #### Protecting a Newly Installed Machine from Network Threats 🪲 <br/>
 - When setting up a new system, it is vulnerable to network-based attacks until security configurations are in place. To mitigate this risk, the machine should be isolated from untrusted networks until it is fully installed and hardened.
 
-- We can achive this using router or host based firewall. <br/>
+- We can achive this using `router` or `host based firewall`. <br/>
 
 <br/>
 
-**So i have create vm(Ubuntu 20.4) on Hyper-V**
+**So i have created vm (`Ubuntu 20.04`) on Hyper-V**
 - We can create a separate switch, which isolates vm from our Host machine network.
 - Another way, we can install an **Host Based firewall** (ex: UFW) and block all incomming connection, Only allow connection from specific host on spcific port.
 
@@ -44,7 +44,7 @@ sudo ufw status numbered
     - Each manufacturer uses different keys to enter BIOS. Try pressing one of the following keys during startup
 2. Set a BIOS/UEFI Administrator Password
     - Navigate to the Security or Password section.
-    - Look for options such as `Superviso`r Password, Setup Password, or `Admin` Password.
+    - Look for options such as `Supervisor` Password, Setup Password, or `Admin` Password.
     - Set a strong password and confirm the changes.
 
   <img src="https://github.com/user-attachments/assets/80432cec-9853-4e63-90fd-cabbf97044a8" alt="" width="650px"></a>
