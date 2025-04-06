@@ -700,8 +700,71 @@ sudo chmod -R 700 /boot
 
 ![---------------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png)
 
-#### 
+### System Updates 🛡️ 
 
+
+#### **Enable Unattended Security Updates on Ubuntu**
+    - Ubuntu systems can automatically receive security patches using the unattended-upgrades package. This ensures that critical vulnerabilities are patched promptly without manual intervention.
+
+
+<br/>
+
+
+**💡Steps to Apply and Automate Security Updates:**
+
+**Install Unattended Upgrades (if not already installed):**
+```
+sudo apt update
+sudo apt install unattended-upgrades
+```
+
+<br/>
+
+**Enable Unattended Upgrades:**
+- Run the command to enable automatic updates:
+```
+sudo dpkg-reconfigure --priority=low unattended-upgrades
+```
+
+  <img src="https://github.com/user-attachments/assets/65a9918b-94b5-48d8-b185-7d57cfa56d78" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+**Configuration File (optional):**
+- We can customize the behavior in: `/etc/apt/apt.conf.d/50unattended-upgrades`
+- Ensure this line is uncommented to apply security updates:
+```
+"${distro_id}:${distro_codename}-security";
+```
+
+  <img src="https://github.com/user-attachments/assets/f388f5c3-fd2c-40c1-bf24-9fa038b52b3c" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+**Test it works:**
+- You can simulate an unattended upgrade:
+```
+sudo unattended-upgrade --dry-run --debug
+```
+
+<br/>
+
+**Manual Security Updates (if needed):**
+- To list only security updates manually:
+- To apply them:
+```
+sudo apt list --upgradable | grep security
+sudo apt upgrade
+```
+
+<br/>
+
+---- 
+
+### **Enable APT GPG Key Verification on Ubuntu**
+APT uses GPG keys to verify that packages are signed and trusted. This check ensures that your system installs only verified software from trusted sources.
 
 
 
