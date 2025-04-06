@@ -265,6 +265,7 @@ If you didn’t separate the `/tmp` partition during OS installation and wish to
 **`💡 2ND Scenario:`** 
 In case you didn’t set up separate partitions during installation and want to do it now, you can manually configure it using these steps.
 
+<br/>
 
 **💡 Steps to Implement:**
 
