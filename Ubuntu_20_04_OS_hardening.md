@@ -234,7 +234,9 @@ If you haven't separated the partitions during OS installations, now you want to
 - Testing the security settings is same, as i mention above.😊
 
 
-![---------------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png)
+<br/>
+
+---- 
 
 #### Create separate partitions for `/var`, `/var/log`, `/var/log/audit`, and `/home` <br/>
 - Creating separate partitions for `/var`, `/var/log`, `/var/log/audit`, and `/home` provides better isolation, security, and management of system resources. These partitions allow for independent management, such as setting appropriate mount options and file system types, which can help protect sensitive data, ensure log retention, and optimize performance. It also prevents one partition from filling up and impacting others.
@@ -261,9 +263,74 @@ If you haven't separated the partitions during OS installations, now you want to
 `2ND Scenario:` After OS installation manually  partitioned the disk and moved directories like `/home`, `/var`, etc. to separate partitions.
 
 
+<br/>
+
+---- 
+
+#### Bind mount /var/tmp to /tmp <br/>
+- Bind mounting `/var/tmp` to `/tmp` is a security and system management practice used to ensure that the contents of /tmp are stored on a separate partition (in this case, /var/tmp) while still using the same path for access.
+
+**Why Do This?**
+- Security: By separating `/tmp` from the root filesystem, you can apply more restrictive mount options (e.g., noexec, nosuid) to "/tmp", improving security.
+- Disk Space Management: If `/var` has more disk space, it allows /tmp to grow without affecting the root partition.
 
 
+**✅ When Should You Use Bind Mount `/tmp` → `/var/tmp`?**
 
+Use this setup if:
+- You do not have a separate partition for `/tmp`.
+- You want to enforce strict security on both `/tmp` and `/var/tmp` (like `noexec, nosuid, nodev`).
+- You want to ensure both dirs share the same storage (usually to prevent `/var` from filling up due to temp files).
+- You don’t need persistent temp files between reboots (`/tmp` gets cleared, `/var/tmp` won't anymore).
+
+> Example use case: Minimalist installations or containers where conserving space and reducing partitions is more important than strict separation of temp storage behavior.
+
+<br/>
+
+**❌ When Should You Avoid This Setup?**
+
+Avoid bind mount if:
+- You've already separated `/tmp` and `/var` to their own partitions.
+- You rely on persistent files in `/var/tmp` that should survive across reboots.
+- You want to apply different mount options (like `noexec` on `/tmp` but allow execution in `/var/tmp`).
+- You care about clear separation of temp file lifetimes for compliance or debugging purposes.
+> Bind mounts inherit the mount options of the target. You can’t set different options for /var/tmp if it’s a bind mount of /tmp.
+
+<br/>
+
+**🔒 Security Tips**
+
+If you want to apply nodev,nosuid,noexec to both `/tmp` and `/var/tmp`, but keep them separate, the best approach is to:
+- Create a dedicated partition for `/var/tmp`.
+- Mount it separately in `/etc/fstab`.
+- Apply your desired security options there.
+
+<br/>
+
+💡 Steps to Bind Mount `/var/tmp` to `/tmp`:
+- Make sure the  `/var/tmp` directory exists. If it doesn’t, create it: `sudo mkdir -p /var/tmp`.
+ 
+- Modify `/etc/fstab` to Bind Mount:
+    - Edit the `/etc/fstab` file to add a bind mount entry. This ensures that the system will automatically bind mount  `/var/tmp` to `/tmp` on boot: sudo nano /etc/fstab
+    - Add the following line at the end of the file: `/var/tmp   /tmp    none    bind,noexec,nosuid,nodev    0   0`
+    - This line tells the system to bind mount  `/var/tmp` to `/tmp` every time the system boots.
+
+- Apply the Bind Mount Immediately:
+    - To immediately apply the changes without rebooting, run: `sudo mount --bind /var/tmp /tmp`
+
+- Verify the Bind Mount:
+    - After applying the changes, verify that the bind mount is working by checking the mount points: `mount | grep /tmp`
+    - Try writing files to `/tmp` and confirm that they are stored under  `/var/tmp` by checking the disk usage with `ls /var/tmp`.
+
+🔗 Reference:
+
+- https://superuser.com/questions/306407/why-bind-mount-var-tmp-to-tmp
+- https://www.tenable.com/audits/items/CIS_Debian_Linux_7_v1.0.0_L1.audit:46439183a92a2f2d0ff272893ca0504b
+
+
+<br/>
+
+---- 
 ![---------------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png)
 
 
