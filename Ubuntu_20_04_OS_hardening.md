@@ -50,9 +50,69 @@ sudo ufw status numbered
   <img src="https://github.com/user-attachments/assets/80432cec-9853-4e63-90fd-cabbf97044a8" alt="" width="650px"></a>
   <br/>
 
-3. After rebbot, if we try to enter BIOS it will ask for password
+3. After reboot, if we try to enter BIOS it will ask for password
 
   <img src="https://github.com/user-attachments/assets/13c6c550-7f79-4155-8e2d-598993a2618f" alt="" width="650px"></a>
+  <br>
+
+---- 
+<br/>
+
+#### Configure The Device Boot Order To Prevent Unauthorized Booting From Alternate Media <br/>
+- To prevent unauthorized access and security bypasses, configure the boot order to restrict booting from external media. This stops attackers from using **live USBs** or CDs to bypass OS security controls.
+
+
+💡 Steps to Implement: <br/>
+- Disable Boot from External Media <br/>
+- In BIOS settings, go to the Boot or Advanced Boot Options menu. <br/>
+- Disable booting from USB, CD/DVD, and PXE (`Network Boot`). <br/>
+- Set the Primary Boot Device to the internal hard drive. <br/>
+- If possible, enable Secure Boot to prevent unauthorized OS loading. <br/> 
+
+**Note ⚠ :**
+- While virtual machines (`VMs`) don't have a traditional BIOS interface like physical machines, you can still set a BIOS password within the VM's firmware settings. This can be achieved by accessing the VM's BIOS or UEFI setup during boot and configuring a password there to prevent any unauthorized changes in boot order.
+
+---- 
+<br/>
+
+#### Disable USB Usage
+- Disabling USB prevents unauthorized devices from being connected, reducing the risk of malware infection and data theft. This can be done via BIOS/UEFI settings, endpoint security solutions, or manually by blocking USB kernel modules.
+
+💡 Steps to block USB:
+- Check BIOS/UEFI settings for USB disable options.
+- If using endpoint security, we can block USB from AV Policy.
+
+---- 
+<br/>
+
+#### Use the latest version  of Ubuntu  
+- Using the latest version of Ubuntu ensures that your system benefits from the latest security patches, bug fixes, and performance improvements. Older versions may lack important security updates and feature enhancements, making them more vulnerable to attacks. 
+
+💡 Steps to Implement:
+
+- Check Current Ubuntu Version:     
+   - Run the following command to check your current Ubuntu version: `cat /etc/os-release`
+- Update System to Latest Version:
+   - Backup critical data before proceeding with the upgrade.
+   - Run the following commands to update the system to the latest available version:
+```
+sudo apt update -y # Update all packages to the latest version
+sudo apt upgrade -y # Upgrade system packages
+```
+
+---- 
+<br/>
+
+#### Lock Physical Console Access 🔐
+- Disabling Ctrl+Alt+Del prevents accidental or forced reboots from the physical console, reducing the risk of unauthorized or unintentional system restarts.
+
+
+💡 Steps for Implementation:
+```
+systemctl mask ctrl-alt-del.target # Disable Ctrl+Alt+Del reboot
+```
+
+  <img src="https://github.com/user-attachments/assets/c9c55832-99a1-43bb-80d0-5d688c1f5976" alt="" width="650px"></a>
   <br>
 
 
