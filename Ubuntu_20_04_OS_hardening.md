@@ -60,6 +60,56 @@ chmod +x /tmp/check.sh
  - To fully mitigate this risk:
  - Use `AppArmor` or `SELinux` to enforce execution restrictions at the system level.
 
+---
+
+`💡 2ND Scenario`
+If you haven't separated the partitions during OS installations, now you want to separate `/tmp` to different partition, then follow the below steps:
+
+- List your all available disks using: `fdisk -l`
+
+  <img src="https://github.com/user-attachments/assets/42180ee9-0b35-44ec-8541-723452999b28" alt="df command output" width="650px"></a>
+  <br>  
+
+- Create a new partition for `/tmp` using fdisk: `sudo fdisk /dev/sda` `#Replace with your disk name`
+  - Press `n` to create a new partition.
+  - Choose a partition number (e.g., 2).
+  - When asked for the start sector, press `Enter` to use the default (next available).
+  - When asked for the end sector, specify how much space you want (e.g., +13G for a 13 GiB /tmp).
+  - Press `w` to save and exit.
+
+  <img src="https://github.com/user-attachments/assets/de0b0f79-b6a4-4774-a636-ff479299d655" alt="" width="650px"></a>
+  <br>  
+
+  <img src="https://github.com/user-attachments/assets/a85a35f3-5afa-4713-b924-e49ebe28a3cf" alt="" width="650px"></a>
+  <br>
+
+- Format the New Partition:
+  - Format the new partition with a file system (e.g., ext4): `sudo mkfs.ext4 /dev/sdaX` `(Replace X with your partition)`
+
+  <img src="https://github.com/user-attachments/assets/6bb4977b-5e7e-4935-923e-342c4985c182" alt="" width="650px"></a>
+  <br>
+
+- Mount the New Partition with Security
+- Ensure `/tmp` is empty before mounting
+  - It’s best to clear `/tmp` on `reboot` (this is common practice).
+- Backup current /tmp (just in case):
+  - `sudo cp -a /tmp /tmp_backup`
+
+- Create a mount point and mount the partition: `sudo mount /dev/sdaX /tmp` `(Replace X with your partition)`
+- Add the following entry to `/etc/fstab` to ensure the partition is mounted on reboot:
+  - `/dev/sda2    /tmp    ext4    nodev,nosuid,noexec    0    2` `(Replace /dev/sda2 with your partition)`
+
+  <img src="https://github.com/user-attachments/assets/387f5b83-b101-4b7e-b965-2d82c7c02de3" alt="" width="650px"></a>
+  <br>
+
+- After updating `/etc/fstab`, run: `mount -a` & `sudo mount -o remount /tmp`
+- Verify the mount : `df -h /tmp` && `mount | grep /tmp`
+
+  <img src="https://github.com/user-attachments/assets/7d0fc9f8-20b1-46e7-ada0-21880a35026c" alt="" width="650px"></a>
+  <br>
+
+- Testing the security settings is same, as i mention above.😊
+
 
 ![---------------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png)
 
