@@ -331,6 +331,85 @@ If you want to apply nodev,nosuid,noexec to both `/tmp` and `/var/tmp`, but keep
 <br/>
 
 ---- 
+
+#### Set `nodev` option to /home
+- The `nodev` option is used to prevent the mounting of device files in a specific directory. By setting the nodev option on /home, you ensure that no device files (e.g., block or character devices) can be created or accessed within the /home directory. This enhances security by preventing attackers from creating or using device files in user directories.
+
+💡 Steps to Set nodev Option on `/home`:
+- Modify `/etc/fstab`:
+    - Edit the `/etc/fstab` file to include the nodev option for the `/home` partition.
+    - `sudo nano /etc/fstab`
+
+- We already have separated partitions for `/home`, find the corresponding line and add the `nodev` option. For example:
+- `/dev/sda2    /home    ext4    defaults,nodev    0   2`  
+
+  <img src="https://github.com/user-attachments/assets/94b581b4-f127-4fe0-b0e4-cf2c2fecec60" alt="fdisk command output" width="650px"></a>
+  <br>
+
+- After updating `/etc/fstab`, run: `sudo mount -o remount /home`
+
+  <img src="https://github.com/user-attachments/assets/da5a04dc-fb3e-4102-9f3d-a398d34ca0cc" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+---- 
+
+#### Set nodev, nosuid, and noexec options on /dev/shm
+
+The /dev/shm directory is a temporary file storage location in memory (shared memory). It is used for applications that need fast temporary storage in RAM. However, because it resides in memory, it could be a target for various attacks, especially if applications running on the system use it insecurely. To enhance security, it is essential to set the nodev, nosuid, and noexec options on /dev/shm.
+
+- nodev: Prevents the creation of device files in /dev/shm, mitigating risks of device file exploitation.
+- nosuid: Prevents the setuid and setgid bits from taking effect, reducing the risk of privilege escalation through shared memory.
+- noexec: Prevents the execution of binaries in /dev/shm, protecting against malicious code that might be placed in the shared memory.
+
+Why Set These Options?
+
+Security: Protects against attacks like privilege escalation, code execution, and device file creation within shared memory.
+Integrity: Ensures that no untrusted binaries are executed from the memory-backed /dev/shm directory.
+Control: Gives administrators control over what can and cannot be done in /dev/shm.
+
+
+💡 Steps to Set `nodev`, `nosuid`, and `noexec` on `/dev/shm`:
+
+- Modify `/etc/fstab` to Include the Options:
+    - Open the `/etc/fstab` file for editing: `sudo nano /etc/fstab`
+    - Add or modify the entry for /dev/shm to include the `nodev`, `nosuid`, and `noexec` options. For example:
+      
+    - `tmpfs     /dev/shm    tmpfs   defaults,nodev,nosuid,noexec   0   0`
+
+  <img src="https://github.com/user-attachments/assets/6dfc3ce3-ee4b-4c3e-bd65-6bc57c786f76" alt="fdisk command output" width="650px"></a>
+  <br>
+
+- This line ensures that these security options are applied to the /dev/shm mount point.
+- After updating `/etc/fstab`, run: `sudo mount -o remount /dev/shm`
+
+  <img src="https://github.com/user-attachments/assets/9bef4c1a-ccbb-4627-bcc3-214ee3ed6fa1" alt="fdisk command output" width="650px"></a>
+  <br>
+
+Verification:
+- Check for Device Creation: Try creating a device file in /dev/shm to see if the nodev option is working. It should fail with a permission error.
+```
+sudo mknod /dev/shm/testdev c 7 0
+```
+- This should fail if `nodev` is properly set.
+
+- Check for Executable Files: Attempt to execute a file in /dev/shm to see if the noexec option is working.
+```
+sudo touch /dev/shm/testscript
+sudo chmod +x /dev/shm/testscript
+/dev/shm/testscript
+```
+- The file should not execute if `noexec` is set correctly.
+
+> 💡 By setting the nodev, nosuid, and noexec options on /dev/shm, you significantly reduce the attack surface of the system, preventing unauthorized device file creation, privilege escalation, and executable code execution in the shared memory space.
+
+<br/>
+
+---- 
+
+
+
 ![---------------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png)
 
 
