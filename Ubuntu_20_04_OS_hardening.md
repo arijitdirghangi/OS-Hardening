@@ -710,7 +710,7 @@ sudo chmod -R 700 /boot
 <br/>
 
 
-**💡Steps to Apply and Automate Security Updates:**
+**💡 Steps to Apply and Automate Security Updates:**
 
 **Install Unattended Upgrades (if not already installed):**
 ```
@@ -763,35 +763,236 @@ sudo apt upgrade
 
 ---- 
 
-### **Enable APT GPG Key Verification on Ubuntu**
-APT uses GPG keys to verify that packages are signed and trusted. This check ensures that your system installs only verified software from trusted sources.
+#### **Enable APT GPG Key Verification on Ubuntu**
+- APT uses GPG keys to verify that packages are signed and trusted. This check ensures that your system installs only verified software from trusted sources.
 
 
+<br/>
+
+**💡 Steps to Manage APT GPG Keys and Enable Verification:**
+
+**Check Installed GPG Keys:(Note: Newer versions of Ubuntu may use /etc/apt/trusted.gpg.d/ instead of apt-key.)**
+```
+apt-key list
+```
+
+<br/>
+
+**Verify Signature Checking Is Enabled:**
+- APT checks GPG signatures automatically. If a key is missing or mismatched, APT will show a warning or error before allowing an install.
+
+<br/>
+
+**Import a Trusted GPG Key (if needed):**
+- For third-party repositories, you might need to import a GPG key:
+```
+curl -fsSL <https://example.com/repo.gpg> | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/example.gpg
+```
+
+<br/>
+
+**Enable GPG Checks in Repository Configs:**
+- Repository definitions in `/etc/apt/sources.list` or `/etc/apt/sources.list.d/*`.list can include the signed-by field to specify the GPG key.
 
 
+<br/>
+
+>**Note ⚠️**
+
+> If we are just using official **Ubuntu repositories**, we don’t need to change anything. They already: <br/>
+> - Sign all packages with official Ubuntu GPG keys.<br/>
+> - Use trusted keys stored in **/etc/apt/trusted.gpg.d/**
+
+  <img src="https://github.com/user-attachments/assets/971fe8c0-756e-497e-9408-428d1001ec28" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+**Enable GPG Checks for Repositories:**
+- Ubuntu uses GPG keys to verify packages from trusted repositories.
+
+<br/>
+
+**Default Setup:**
+- Ubuntu stores trusted keys in `/etc/apt/trusted.gpg.d/`
+- These keys validate official repositories listed in `/etc/apt/sources.list`
+
+<br/>
+
+**Hardening Practice (For Custom Repositories):**
+- Modern best practice is to use the `signed-by=` field in APT sources to limit a specific GPG key to a specific repository.
+- This improves security by preventing one compromised key from validating all repositories.
+
+![---------------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png)
+
+### Secure Boot Settings 🔒
+
+#### **Set User/Group Owner to Root, and Permissions to Read and Write for Root Only, on `/boot/grub2/grub.cfg`**
+- The `/boot/grub2/grub.cfg` file contains critical bootloader configuration settings. If non-root users have access to this file, they could potentially alter boot parameters, which could compromise the security of the system. It's essential to set the file permissions so that only the root user can read and modify the file.
 
 
+<br/>
+
+**💡 Steps to Set User/Group Ownership and Permissions for "/boot/grub2/grub.cfg":**
+
+<br/>
+
+**Change Ownership to Root:**
+- First, ensure that the owner and group of the 'grub.cfg' file are set to 'root'. Use the 'chown' command to set the ownership:
+```
+sudo chown root:root /boot/grub2/grub.cfg
+chown root:root /etc/grub.conf
+chown -R root:root /etc/grub.d
+chmod -R og-rwx /etc/grub.d
+chmod og-rwx /etc/grub.conf
+```
+
+<br/>
+
+**Set Permissions to Read and Write for Root Only:**
+- Next, modify the file permissions so that only the root user has read and write access. All other users should have no access to the file.
+- You can use the 'chmod' command to set the correct permissions:
+`sudo chmod 600 /boot/grub2/grub.cfg`
+
+- This sets the file permissions to `rw-------`, where:
+  - The owner (root) has read and write permissions (`rw-`).
+  - The group and others have no permissions (`---`).
+
+  <img src="https://github.com/user-attachments/assets/2eececd6-46e1-47e9-9af9-ebcb9eae8965" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+---- 
+
+#### **Set Boot Loader Password**
+- Setting a bootloader password adds an additional layer of security by preventing unauthorized users from modifying the boot parameters at startup. This is particularly important because attackers with access to the bootloader can modify boot settings, potentially gaining access to the system or altering system behavior. By requiring a password to modify bootloader settings, you can protect the integrity of the boot process.
+
+<br/>
+
+**💡 Steps to Set Boot Loader Password:**
+
+**Generate a GRUB Password Hash:** 
+- To set a password for the bootloader, you need to generate a password using the `grub-mkpasswd-pbkdf2` command.
+- Run the following command and provide a password when prompted: `grub-mkpasswd-pbkdf2`
+- You will receive an output like this:
+```
+Enter password:
+Confirm password:
+```
+- Copy the PBKDF2 hash and Open this file in editor `/etc/grub.d/00_header`
+- Add the follwoing entries
+```
+cat <<EOF
+set superuser="root"
+password_pbkdf2 root grub.pbkdf2.sha512.10000.96C2A427209BEA03F954265E7D8E5C87AEAB7C5BEBEA0E65496FE7D1072FFAAF2467C70CD639390286E52CAA385364C8BD4747F7FF4654F5DF85B1A4E1D165C1.0D61D7706A7BD9DDD5A23BE15E7BAB054CB98DB5091DD8D233A1D587FFBC6F54E626A8D7DC280619C75D4B2E3E604701D785DF595721398F56D434DE4800DEC8
+EOF
+```
+
+<br/>
+
+**Update the `grub` configuration:**  `sudo update-grub`
+
+  <img src="https://github.com/user-attachments/assets/4a909a18-7130-4347-a338-96aa7c13008d" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+**Reboot the system:** 
+- In boot menu press `E`.
+- It will ask for username (default "root") & type password.
+
+![---------------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png)
+
+### **Process Hardening ⚙️**
+
+#### **Restrict Core Dumps**
+- Core dumps contain memory snapshots of crashed processes and may expose sensitive information, such as passwords and encryption keys. Restricting core dumps enhances security and prevents unauthorized access to critical data.
+
+<br/>
+
+**💡 Steps to Implement:**
+
+**Disable Core Dumps for All Users:**
+- Add the following line to `/etc/security/limits.conf` to disable core dumps : 
+    - `* hard core 0`
+    - `* soft core 0`
+
+  <img src="https://github.com/user-attachments/assets/b272ecd3-928b-488a-a819-d9b327d1ea61" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+**Disable Core Dumps via sysctl**
+- Modify `/etc/sysctl.d/99-sysctl.conf` OR `/etc/sysctl.conf` to prevent core dumps: 
+```
+fs.suid_dumpable = 0
+kernel.core_pattern=|/bin/false
+```
+- Apply the changes: `sudo sysctl -p /etc/sysctl.d/99-sysctl.conf`
+
+  <img src="https://github.com/user-attachments/assets/aff29379-dd03-46d1-bef3-79727da8d25f" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+**Disable Core Dumps for Systemd Services**
+- Edit `/etc/systemd/system.conf` and `/etc/systemd/user.conf` to include: DumpCore=no
+- Reload systemd configurations: `sudo systemctl daemon-reexec`
+
+  <img src="https://github.com/user-attachments/assets/560ae6ac-b824-40b8-8b4d-918e67f75ae6" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+**🛠️ Verification:**
+- Run the following command to check the core dump configuration: `ulimit -c`
+
+  <img src="https://github.com/user-attachments/assets/c9e5ebbc-bcae-4cd1-b946-9c3c40c27d51" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+---- 
+
+#### **Enable Randomized Virtual Memory Region Placement**
+- Address Space Layout Randomization (ASLR) randomizes memory addresses to make it harder for attackers to predict memory locations, mitigating buffer overflow and memory corruption attacks.
 
 
+**💡 Steps to Implement:**
+
+**Enable ASLR via `sysctl`**
+- Add the following line to `/etc/sysctl.conf` to ensure ASLR is enabled: `kernel.randomize_va_space = 2`
+- Apply the changes: `sudo sysctl -p`
 
 
+**Verify ASLR Status:**
+- Check if ASLR is enabled by running: cat /proc/sys/kernel/randomize_va_space
+- Expected Output:
+```
+ - 2 → Full ASLR enabled ✅
+ - 1 → Partial ASLR enabled ⚠️
+ - 0 → ASLR disabled ❌ (Needs fixing)
+```
+- After reboot, run: `cat /proc/sys/kernel/randomize_va_space`
+- It should return `2`, confirming that ASLR is fully enabled.
 
 
+**(Optional) Protect ASLR Setting**
+- Prevent unauthorized modifications by making the `sysctl` setting immutable:
+`sudo chattr +i /etc/sysctl.conf`
 
 
+**🛠️ Verification:**
+After reboot, run: `cat /proc/sys/kernel/randomize_va_space`
+It should return `2`, confirming that ASLR is fully enabled.
 
 
-
-
-
-
-
-
-
-
-
+  <img src="https://github.com/user-attachments/assets/a5f70fc0-a08a-4e02-8b23-5d05de7e5c4a" alt="fdisk command output" width="650px"></a>
+  <br>
 
 
 ![---------------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png)
+
 
 
