@@ -442,7 +442,7 @@ sudo chmod +t <directory_path>
 
 <br/>
 
-**Automate the process:**
+**💡 Automate the process:**
 - To apply the sticky bit on all world-writable directories, use a loop:
 ```
 find / -type d -perm -0002 -exec sudo chmod +t {} \; 2> /dev/null
@@ -454,6 +454,177 @@ find / -type d -perm -0002 -exec sudo chmod +t {} \; 2> /dev/null
 <br/>
 
 ---- 
+
+#### Enable Hard/Soft Link Protection
+- Attackers may exploit insecure hard links and symlinks to access sensitive files or escalate privileges. Enabling protection prevents these attacks by restricting how links can be used.
+
+<br/>
+
+💡 Steps to configures: 
+- Enable Hard and Symlink Protection  
+ - Create or modify the system configuration file:  
+```
+echo "fs.protected_hardlinks = 1" | sudo tee -a /etc/sysctl.conf  
+echo "fs.protected_symlinks = 1" | sudo tee -a /etc/sysctl.conf  
+```
+
+<br/>
+
+- Apply changes immediately:  
+```
+sudo sysctl -p /etc/sysctl.conf  
+```
+
+<br/>
+
+- Verify settings:  
+```shell
+sysctl fs.protected_hardlinks  
+sysctl fs.protected_symlinks
+#Expected Output: Both should return 1 (enabled).   
+```
+
+  <img src="https://github.com/user-attachments/assets/35804ebe-4ec8-4d3f-a64f-8ebc3feb83ae" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+Understanding the Settings  
+- 'fs.protected_hardlinks = 1'  
+  - Prevents unprivileged users from creating hard links to files they do not own.  
+- 'fs.protected_symlinks = 1'  
+  - Blocks symlink-based privilege escalation attacks by preventing symlink access to files users don’t own.  
+
+<br/>
+
+🔗 Reference:  
+- https://sysctl-explorer.net/fs/protected_symlinks/
+
+<br/>
+
+---- 
+
+#### Disable Uncommon Filesystems
+
+Disabling unused or uncommon filesystems reduces the attack surface and prevents unauthorized mounting of potentially insecure storage formats.
+
+
+<br/>
+
+💡 Steps to configure:
+1. Block Uncommon Filesystems  <br/>
+i) Blacklist the filesystems in `/etc/modprobe.d/blacklist.conf`:  
+```
+sudo tee -a /etc/modprobe.d/blacklist.conf <<EOF
+blacklist cramfs
+blacklist freevxfs
+blacklist jffs2
+blacklist hfs
+blacklist hfsplus
+blacklist squashfs
+blacklist udf
+blacklist fat
+blacklist vfat
+blacklist nfs
+blacklist nfsv3
+blacklist gfs2
+EOF
+```
+- This ensures they are not automatically loaded on boot.
+
+<br/>
+
+2. Apply Changes Immediately  
+- Rebuild the initramfs (important for persistence): sudo update-initramfs -u 
+- Unload any currently loaded uncommon filesystem modules:  
+```
+sudo rmmod cramfs freevxfs jffs2 hfs hfsplus squashfs udf fat vfat nfs nfsv3 gfs2 2>/dev/null
+```
+
+- Verify the settings:  
+```
+lsmod | grep -E 'cramfs|freevxfs|jffs2|hfs|hfsplus|squashfs|udf|fat|vfat|nfs|nfsv3|gfs2'
+```
+
+  <img src="https://github.com/user-attachments/assets/8994f8d3-cd76-4f4e-95a6-b00cc63cbe28" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+💡   Understanding the Settings  
+- `install <module> /bin/false`  
+    - Prevents the filesystem from being loaded as a kernel module.  
+- `blacklist <module>`      
+    - Stops the kernel from automatically loading these filesystems.  
+- `update-initramfs -u`  
+    - Ensures changes are applied in the boot process.  
+
+<br/>
+
+---- 
+
+#### Lock The Boot Directory 
+- The /boot directory contains critical bootloader files, such as the kernel and GRUB configurations. If an attacker modifies these files, they can gain persistent access or bypass security measures. Locking the /boot directory prevents unauthorized modifications.
+
+<br/>
+
+
+**💡 Steps to Lock the Boot Directory :** 
+
+**Set Boot Directory as Read-Only**  
+- Modify `/etc/fstab` to prevent accidental modifications: `sudo nano /etc/fstab` 
+- Add the following line (or modify the existing '/boot' entry):  
+```
+UUID=<BOOT_PARTITION_UUID> /boot ext4 defaults,ro 0 1
+
+OR
+    
+LABEL=/boot /boot ext4 defaults,ro 0 1
+```
+
+  <img src="https://github.com/user-attachments/assets/8f086b35-e583-4d77-8411-fa5b64444d61" alt="fdisk command output" width="650px"></a>
+  <br>
+
+- Replace '<BOOT_PARTITION_UUID>' with the actual UUID of the boot partition (find it using 'blkid').  
+- 'ro' sets the directory as read-only.  
+
+<br/>
+
+**Restrict File Permissions**  
+- Ensure only root can modify boot files:
+```
+sudo chown -R root:root /boot
+sudo chmod -R 700 /boot
+```
+
+  <img src="https://github.com/user-attachments/assets/04c8f47f-bd75-4b6a-802d-a48b06404e4e" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+![---------------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png)
+
+#### 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
