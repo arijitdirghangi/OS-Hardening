@@ -186,7 +186,7 @@ chmod +x /tmp/check.sh
 ---
 
 **`💡 2ND Scenario`**
-If you haven't separated the partitions during OS installations, now you want to separate `/tmp` to different partition, then follow the below steps:
+If you didn’t separate the `/tmp` partition during OS installation and wish to do so now, follow the steps below.
 
 - List your all available disks using: `fdisk -l`
 
@@ -260,7 +260,87 @@ If you haven't separated the partitions during OS installations, now you want to
   <img src="https://github.com/user-attachments/assets/ab7efbbb-67fc-4b52-acdd-3000318fa69e" alt="fdisk command output" width="650px"></a>
   <br>
 
-`2ND Scenario:` After OS installation manually  partitioned the disk and moved directories like `/home`, `/var`, etc. to separate partitions.
+---
+
+**`💡 2ND Scenario:`** 
+In case you didn’t set up separate partitions during installation and want to do it now, you can manually configure it using these steps.
+
+
+**💡 Steps to Implement:**
+
+**Identify Available Disks:**
+ - Use `sudo fdisk -l` to list available disks.
+
+<br/>
+
+**Create Partitions for `/var`, `/var/log`, `/var/log/audit`, and `/home`:**
+- Use fdisk or parted to create partitions for each directory.
+
+<br/>
+
+**Format Each Partition:**
+- Format partitions with the ext4 file system:
+```
+sudo mkfs.ext4 /dev/sda1 (replace /dev/sda1 with your partition name)
+```
+
+<br/>
+
+**Create temporary mount points & copy existing logs**
+```bash
+sudo mkdir -p /mnt/var /mnt/var_log /mnt/var_log_audit /mnt/home
+sudo mount /dev/sdaw /mnt/var
+sudo mount /dev/sdaX /mnt/var_log
+sudo mount /dev/sdaY /mnt/var_log_audit
+sudo mount /dev/sdaZ /mnt/home
+
+sudo rsync -aAXv /var/ /mnt/var/
+sudo rsync -aAXv /var/log/ /mnt/var_log/
+sudo rsync -aAXv /var/log/audit/ /mnt/var_log_audit/
+sudo rsync -aAXv /home/arijit /mnt/home/  # Copy only the user directory (not the entire /home folder itself)
+
+#If you want to move all users under /home, just do:
+sudo rsync -aAXv /home/ /mnt/home/
+```
+> Note ⚠ : The trailing slashes means not the home dir but the content of home directory.
+
+  <img src="https://github.com/user-attachments/assets/c84855af-17eb-4891-bd79-2b3b12d4f709" alt="fdisk command output" width="650px"></a>
+  <br>
+
+  <img src="https://github.com/user-attachments/assets/a84e8851-9fca-4320-88e0-0825d15c5e93" alt="fdisk command output" width="650px"></a>
+  <br>
+
+> In the picture above, I made a mistake by using `rsync -av /home`, which results in copying the entire `/home` directory into `/mnt/home`, leading to a nested path like `/mnt/home/home/<username>`.  
+>  
+> To avoid this, use trailing slashes to copy only the contents of `/home`, like so:  
+> `sudo rsync -aAXv /home/ /mnt/home/`  
+>  
+> Alternatively, if you want to copy a specific user's home directory, use:  
+> `sudo rsync -aAXv /home/arijit /mnt/home/`
+
+
+
+<br/>
+
+**Update /etc/fstab to Persist Mounts:**
+ - Add these entries to /etc/fstab:
+```
+/dev/sda1    /var    ext4    defaults    0    2
+/dev/sda2    /var/log    ext4    defaults    0    2
+/dev/sda3    /var/log/audit    ext4    defaults    0    2
+/dev/sda4    /home    ext4    defaults    0    2
+```
+
+<br/>
+
+**Verify the Mounts:**
+- After updating /etc/fstab, mount the partitions: sudo mount -a
+- Verify by running: `mount | grep /var`
+
+<br/>
+
+
+
 
 
 <br/>
