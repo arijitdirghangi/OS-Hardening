@@ -3,6 +3,8 @@ lol
 
 ![---------------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png)
 
+### Filesystem Configuration 📁
+
 #### Create a separate partition with the `nodev`, `nosuid`, and `noexec` options set for `/tmp`  <br/>
 - Creating a separate partition for `/tmp` with the `nodev`, `nosuid`, and `noexec` options ensures better security by restricting potentially dangerous operations in temporary directories. This can help mitigate the risks associated with untrusted files, as well as prevent certain types of attacks, like privilege escalation and executing malicious code from temporary files.
 
