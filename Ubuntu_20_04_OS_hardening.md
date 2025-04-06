@@ -408,6 +408,58 @@ sudo chmod +x /dev/shm/testscript
 
 ---- 
 
+#### Set sticky bit on all world-writable directories
+
+- The sticky bit is a permission that can be set on directories to restrict the deletion of files within the directory. When the sticky bit is set, only the file owner, the directory owner, or the root user can delete or rename files within that directory, even if others have write permissions to the directory. This is especially useful for directories like /tmp, where multiple users can write files but shouldn't be able to delete or modify other users' files.
+
+Setting the sticky bit on world-writable directories enhances security by preventing users from accidentally or maliciously deleting or renaming files owned by other users.
+
+
+**Why Set the Sticky Bit?**
+
+- Prevent Unauthorized File Deletion: Ensures that only the file owner, directory owner, or root user can delete or rename files, even in world-writable directories.
+- Improves Security in Shared Directories: Protects sensitive files in shared directories, such as /tmp or /var/tmp.
+
+<br/>
+
+**Find World-Writable Directories:**
+- Use the following command to list all directories that are world-writable (`777` permissions or `rwxrwxrwx`):
+```
+find / -type d -perm -0002 -exec ls -ld {} \; 2> /dev/null
+```
+- This will search for all directories with world-writable permissions.
+
+  <img src="https://github.com/user-attachments/assets/6820b047-c9bf-4356-8dc2-30035b77e65e" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+**To Set Sticky Bit:**
+ - Use the `chmod` command to set the sticky bit on each world-writable directory:
+ ```
+sudo chmod +t <directory_path>
+```
+
+<br/>
+
+**Automate the process:**
+- To apply the sticky bit on all world-writable directories, use a loop:
+```
+find / -type d -perm -0002 -exec sudo chmod +t {} \; 2> /dev/null
+```
+
+  <img src="https://github.com/user-attachments/assets/782b3a5a-0c23-46f5-81a9-af3e2f3469f7" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+---- 
+
+
+
+
+
+
 
 
 ![---------------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png)
