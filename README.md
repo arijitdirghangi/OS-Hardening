@@ -10,7 +10,7 @@
   * [Prologue](#prologue)
   * [Levels of priority](#levels-of-priority)
   * [OpenSCAP](#openscap)
-- **[Partitioning](#[partitioning](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#preparation-and-installation-%EF%B8%8F))**
+- **[Partitioning](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#preparation-and-installation-%EF%B8%8F)**
   * [Separate partitions](#separate-partitions)
   * [Restrict mount options](#restrict-mount-options)
   * [Polyinstantiated directories](#polyinstantiated-directories)
