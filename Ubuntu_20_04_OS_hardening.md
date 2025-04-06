@@ -32,7 +32,28 @@ sudo ufw status numbered
   <img src="https://github.com/user-attachments/assets/84a9f6a2-f3bd-4a60-91f2-3f13eda2073e" alt="" width="850px"></a>
   <br>
 
-- 
+---- 
+<br/>
+
+#### Set a BIOS/Firmware Password 🔒 <br/>
+- The BIOS/Firmware is a critical component of a system's security. Without proper protection, an attacker with physical access can modify boot settings, reset passwords, or boot from unauthorized devices to compromise the system. Setting a strong BIOS password helps prevent unauthorized access and security bypasses.
+
+Steps to Implement:
+
+1. Access the BIOS/UEFI Setup Menu
+    - Each manufacturer uses different keys to enter BIOS. Try pressing one of the following keys during startup
+2. Set a BIOS/UEFI Administrator Password
+    - Navigate to the Security or Password section.
+    - Look for options such as `Superviso`r Password, Setup Password, or `Admin` Password.
+
+  <img src="https://github.com/user-attachments/assets/80432cec-9853-4e63-90fd-cabbf97044a8" alt="" width="650px"></a>
+  <br>
+    - Set a strong password and confirm the changes.
+
+3. After rebbot, if we try to enter BIOS it will ask for password
+
+  <img src="https://github.com/user-attachments/assets/13c6c550-7f79-4155-8e2d-598993a2618f" alt="" width="650px"></a>
+  <br>
 
 
 
