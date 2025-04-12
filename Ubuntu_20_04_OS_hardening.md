@@ -994,5 +994,251 @@ It should return `2`, confirming that ASLR is fully enabled.
 
 ![---------------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png)
 
+### **OS Hardening**
 
+#### **Remove Legacy Services**
+- Legacy services like Telnet, rsh, rlogin, rcp, ypserv, ypbind, tftp, talk are considered insecure because they transmit credentials and data in plaintext. Removing them reduces attack surface and prevents accidental use.
+
+<br/>
+
+**💡 Steps to Implement:**
+
+**Check if Legacy Packages Are Installed**
+```
+dpkg -l | grep -E 'telnet|rsh|rlogin|rcp|ypbind|ypserv|tftp|talk'
+```
+
+<br/>
+
+**Remove Insecure Legacy Services**
+```
+sudo apt remove --purge -y telnetd rsh-client rsh-server rlogin rsh-redone-client tftp tftpd talk talkd nis
+
+# used the package name listed using "dpkg" command
+sudo apt remove --purge -y telnet
+```
+> Note: Some packages may not be installed by default. apt will just skip them.
+
+
+###### **Disable Remaining Services (if installed manually or still running)**
+
+**Check for active legacy services:**
+```
+sudo systemctl list-units --type=service | grep -E 'telnet|rsh|tftp|talk|yp'
+```
+
+<br/>
+
+**Stop and disable any leftover ones:** `sudo systemctl disable --now <service_name>`
+<br/>
+
+**Verify any remaing service:** `dpkg -l | grep -E 'telnet|rsh|rlogin|rcp|ypbind|ypserv|tftp|talk'`
+
+<br/>
+
+---- 
+
+#### **Remove xinetd/inetd if Not Needed⚙️**
+- If you confirmed they are not required, removing them entirely:
+    - Reduces the attack surface.
+    - Eliminates any risk of them being enabled later by mistake or due to package updates.
+
+<br/>
+
+
+**💡 Steps to Remove:**
+
+<br/>
+
+**Check if Installed:** `dpkg -l | grep -E 'xinetd|inetutils-inetd'` <br/>
+
+**Stop the Service (if running):** `sudo systemctl disable --now xinetd` <br/>
+
+**Remove the Packages:** `sudo apt remove --purge -y xinetd inetutils-inetd`
+
+<br/>
+
+**🛠️ Verification:** `dpkg -l | grep -E 'xinetd|inetutils-inetd'`
+ - Should return no output if successfully removed.
+
+
+<br/>
+
+---- 
+
+#### **Disable or Remove Unused Services**
+- Disabling or removing unnecessary services on a server is crucial for security. Services such as FTP, DNS, LDAP, SMB, DHCP, NFS, and SNMP can expose the system to potential attacks. By disabling or removing these services, you reduce the number of open ports and limit the attack surface of the system.
+
+<br/>
+
+**💡 Steps to Disable or Remove Unused Services:**
+
+**List active services:**
+    - First, check which services are currently active on your system:
+```
+sudo systemctl list-units --type=service --state=running
+```
+
+  <img src="https://github.com/user-attachments/assets/5108f511-0d40-45dd-8e06-08ee3d30f329" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+**Disable/Remove unwanted services:**
+- If you find any unwanted services, disable them to prevent them from starting automatically on boot. For example:
+- If you are sure you will not need these services, you can remove the corresponding packages. For example:
+
+**Example: SMB (Samba)** 
+```
+sudo systemctl stop smb
+sudo systemctl disable smb
+```
+  <img src="https://github.com/user-attachments/assets/f7110e3a-2449-4137-b4cf-100d079a14e4" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+---- 
+
+#### **Set Daemon Umask**
+- For each daemon, you can define a default umask. Typically, this can be set in the service's startup script or configuration files, e.g., `/etc/init.d/<service>` or `/etc/systemd/system/<service>.service`.
+
+<br/>
+
+**💡 Steps to configure:**
+**Edit the Daemon Configuration:**
+- For each daemon, you can define a default umask. Typically, this can be set in the service's startup script or configuration files, e.g., /etc/init.d/<service> or /etc/systemd/system/<service>.service.
+
+<br/>
+
+**Set the Umask in the Script:**
+- Add the following line in the service startup script or configuration:
+- This ensures that files created by the daemon are created with restrictive permissions.
+```
+umask 0077 # OR
+umask 0027
+```
+- After change restart the service: `sudo systemctl restart ssh`
+
+  <img src="https://github.com/user-attachments/assets/0dddda1a-9a8e-4dab-9740-79b11d6a22b2" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+**Test the Daemon:**
+- Ensure that the daemon is running with the desired umask and that files it creates have the correct permissions.
+
+> By enforcing a strict umask on daemons, you can enhance system security by ensuring that files and directories created by the system are not overly permissive.
+
+<br/>
+
+**Override umask for a service:**
+```
+sudo systemctl edit nginx
+
+#Then add
+[Service]
+UMask=027
+
+#Save and exit, then:
+sudo systemctl daemon-reload
+sudo systemctl restart nginx
+```
+
+
+![---------------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png)
+
+### **User Account Management 👤**
+
+
+#### **Limit Administrator Privileges to only Necessary Accounts**
+- Restrict administrative privileges to only essential accounts based on the Principle of Least Privilege (PoLP). This reduces the risk of unauthorized access, accidental misconfiguration, and privilege escalation attacks. Regularly audit and remove unnecessary administrative access.
+
+<br/>
+
+**💡 Steps to configure:**
+1. Use sudo instead of root for administrative tasks.
+2. Restrict sudo access using `/etc/sudoers` (e.g., visudo).
+3. Audit user accounts with getent passwd and check for unnecessary admin privileges.
+4. Limit access to privileged commands via sudo rules.
+
+<br/>
+
+**Verification Method:**
+- Run **sudo -l -U <user>** to verify a user's sudo privileges.
+- Check `/etc/passwd` and `/etc/group` to ensure only necessary accounts have administrative access.
+
+<br/>
+
+---- 
+
+#### **Setting Up SUDO for User with Only Certain Delegated Privileges**
+- Configure sudo to grant users specific administrative privileges while minimizing security risks. Instead of giving full root access, allow users to execute only necessary commands.
+
+###### **Example:**
+```
+thor ALL=(ALL) ALL # → Full sudo access
+loki ALL=(ALL) /usr/bin/systemctl status sshd # → Can only check SSHD service status
+hulk ALL=(ALL) STORAGE # → Can access the STORAGE command
+```
+
+**💡 Best Practices:**
+- Use visudo to edit `/etc/sudoers` or create rule-specific files in `/etc/sudoers.d/`.
+- Avoid modifying `/etc/sudoer`s directly to prevent syntax errors.
+- Verification: Use visudo to review entries and `sudo -l -U <username>` to list allowed commands.
+
+<br/>
+
+---- 
+
+#### **Check User Home Directory is Accessible by other User or Not**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+![---------------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png)
 
