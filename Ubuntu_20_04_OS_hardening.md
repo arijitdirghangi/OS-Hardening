@@ -958,6 +958,7 @@ kernel.core_pattern=|/bin/false
 #### **Enable Randomized Virtual Memory Region Placement**
 - Address Space Layout Randomization (ASLR) randomizes memory addresses to make it harder for attackers to predict memory locations, mitigating buffer overflow and memory corruption attacks.
 
+<br/>
 
 **💡 Steps to Implement:**
 
@@ -1192,28 +1193,274 @@ hulk ALL=(ALL) STORAGE # → Can access the STORAGE command
 ---- 
 
 #### **Check User Home Directory is Accessible by other User or Not**
+- Ensure that user home directories are not accessible by unauthorized users. By default, home directories should have **700** or **750** permissions to prevent other users from accessing them.
 
 
+<br/>
+
+###### **Run the following command to check home directory permissions:** 
+```
+ls -la /home/
+```
+
+###### **Default Permissions in Different Distributions:**
+> Ubuntu: The useradd utility creates home directories with 755 permissions, making them accessible to other users.
+
+<br/>
+
+**💡Steps to Secure Home Directory Permissions:**
+
+###### **Modify the UMASK value in /etc/login.defs:**
+- Change UMASK to `077` to ensure new users have `700` permissions by default.
+- This ensures only the owner has full access, and others have no access.
+
+  <img src="https://github.com/user-attachments/assets/660ebf47-234b-49b7-b9cf-5771d9948b75" alt="fdisk command output" width="650px"></a>
+  <br>
+
+###### **💡 Manually update permissions for existing users (if needed):**
+> RUN the following command: chmod 700 /home/*
 
 
+----
+
+#### **Enforcing Strong Password Criteria**
+- Ensure that users set strong passwords to enhance system security. Implement policies that enforce complexity, length, expiration, and history to prevent weak or reused passwords.
+
+<br/>
+
+**💡 Steps to Configure Password Policy using `pwquality.conf`:**
+
+Install “libpam-pwquality”
+```
+apt install libpam-pwquality -y
+```
+
+###### **Locate the Configuration File**
+ - The pwquality.conf file is usually found at: /etc/security/pwquality.conf
+
+###### **Modify Password Policy Settings, open the file in a text editor (e.g., nano or vim):**
+```
+sudo nano /etc/security/pwquality.conf
+```
+
+###### **Add or modify the following parameters:**
+| Parameter | Description |
+|-----------|------------|
+| minlen=12 | Minimum password length (e.g., 12 characters) |
+| dcredit=-1 | Requires at least one digit |
+| ucredit=-1 | Requires at least one uppercase letter |
+| lcredit=-1 | Requires at least one lowercase letter |
+| ocredit=-1 | Requires at least one special character |
+| retry=3 | Number of retries before rejection |
+| dictcheck=1 | Prevents dictionary words in passwords |
+| usercheck=1 | Prevents username in passwords |
+| enforcing=1 | Enforcing PAM Module |
+
+  <img src="https://github.com/user-attachments/assets/0effbde2-077a-40ac-8b31-1e59e1a2e7e3" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+###### **Test the Policy:**
+- Switch to a normal user and Try changing a own password: `passwd <username>`
+- If the new password does not meet the configured criteria, an error message will be displayed.
+
+  <img src="https://github.com/user-attachments/assets/9914a4ed-9cc9-45b0-9457-e93e42666f1d" alt="fdisk command output" width="650px"></a>
+  <br>
+
+> Note ⚠️: By default it's not check the password quality of root user, to enable check remove the “#” from `enforce_for_root` line.
 
 
+----
+
+#### **Check User Are Using Old Password As new Password or Not**
+- Prevent users from reusing old passwords by maintaining a password history. This ensures they create new, strong passwords instead of cycling through previous ones.
+
+###### **Check if password history enforcement is enabled:** `grep "pam_pwhistory.so" /etc/pam.d/common-password`
+
+<br/>
+
+**💡Steps to Prevent Password Reuse :**
+
+###### **Edit the Password Policy File:** `sudo nano /etc/pam.d/common-password`
+
+###### **Add/Modify the following line (ensure a backup first):** `password required pam_pwhistory.so remember=5`
+> "remember=5" → Prevents reuse of the last 5 passwords.
+
+###### **Ensure the following argument is present in the same file:** 
+```
+password [success=1 default=ignore] pam_unix.so obscure 
+```
+> `use_authtok` → Ensures the system verifies if the new password has been used before.
+
+```
+password [success=1 default=ignore] pam_unix.so obscure use_authtok
+```
+
+  <img src="https://github.com/user-attachments/assets/bbac5f82-f95c-47b5-86ab-1c2400b04191" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+**🔍 Testing the Policy:**
+
+###### **Try changing a user’s password to an old one:** `passwd <username>`
+
+###### **If configured correctly, it should reject the old password and prompt for a new one.**
+
+  <img src="https://github.com/user-attachments/assets/35ce3f7c-5fe5-4c76-8493-60bba73862d5" alt="fdisk command output" width="650px"></a>
+  <br>
+
+----
+
+#### **Set Auto Logout for Inactive Users**
+- Inactive user sessions can be a security risk. Automatically logging out idle users helps prevent unauthorized access if a session is left open.
+
+<br/>
+
+**💡 Steps to Configure Auto Logout:**
+
+###### **Configure Auto Logout for All Users**
+
+###### **Create a script to enforce automatic logout:**
+```
+sudo tee /etc/profile.d/idle-users.sh <<EOF
+#!/bin/bash
+readonly TMOUT=9  # Set timeout to 900 seconds (15 minutes)
+readonly HISTFILE   # Prevent saving command history after logout
+export TMOUT
+EOF
+```
+
+> `TMOUT=900` logs out inactive users after 15 minutes.
+> `HISTFILE` prevents the command history from being saved after logout.
+
+###### **Apply Correct Permissions**
+> Ensure the script is executable: `sudo chmod +x /etc/profile.d/idle-users.sh`
+> Apply changes immediately for all users: `source /etc/profile.d/idle-users.sh`
+
+<br/>
+
+**Verify the Configuration:** 
+
+###### **Check if TMOUT is set for the current user:** `echo $TMOUT`
+> Expected Output: '900'
+
+###### **Confirm that the script exists and is executable:** `ls -l /etc/profile.d/idle-users.sh`
+> Expected Output: '-rwxr-xr-x' (Executable script)
+
+  <img src="https://github.com/user-attachments/assets/fb3d3eb2-2221-4659-b062-60cfc2cb614a" alt="fdisk command output" width="650px"></a>
+  <br>
+
+> Summary:
+> - Enforced 15-minute auto-logout for inactive users
+> - Prevented command history saving after logout
+> - Applied global enforcement across all user sessions
+
+<br/>
+
+**Additional Hardening Options** 
+
+###### **Set auto logout for all interactive shells by adding to `/etc/bash.bashrc` or `/etc/profile`:** `echo "readonly TMOUT=900" | sudo tee -a /etc/bash.bashrc`
+
+###### **Ensure the setting is enforced globally:** `echo "readonly HISTFILE" | sudo tee -a /etc/bash.bashrc`
+
+###### **Logout users even in TTY sessions:** `echo "export TMOUT=900" | sudo tee -a /etc/profile`
 
 
+---
+
+### **Configure Account Lockout Policy 🔒**
+- The account lockout policy helps protect against brute-force attacks by locking a user account after multiple failed login attempts. This reduces the risk of unauthorized access.
 
 
+###### **Check if pam_faillock.so is properly configured in the PAM files:** `grep "pam_faillock.so" /etc/pam.d/*`
 
+###### **To check failed login attempts:** `faillock --user <username>`
 
+<br/>
 
+**💡 Steps to Configure Account Lockout Policy:**
 
+###### **Modify the /etc/pam.d/common-auth file:** `sudo nano /etc/pam.d/common-auth`
 
+###### **Add the following lines after `pam_unix.so nullok`:**
+```
+auth required pam_faillock.so preauth  
+auth [default=die] pam_faillock.so authfail  
+auth sufficient pam_faillock.so authsucc 
+```
 
+  <img src="https://github.com/user-attachments/assets/cdb8c7cd-3d99-44ae-91a1-57d8ddf5c982" alt="fdisk command output" width="650px"></a>
+  <br>
 
+  <img src="https://github.com/user-attachments/assets/c7fe3df9-e436-4f41-aebf-6dab05944540" alt="fdisk command output" width="650px"></a>
+  <br>
+  
+<br/>
 
+**Additional Commands :**
+> 💡 Clear Failed Attempts (If Needed) : `sudo faillock --user <username> --reset`
 
+<br/>
 
+**💡 Testing the Lockout Policy:**
+> - Attempt to log in with the wrong password 3 times. <br/>
+> - After the 3rd failure, the account should be locked for 10 minutes. <br/>
+> - Check failed login attempts: `sudo faillock --user <username>`
 
+<br/>
 
+----
+
+**Configure Password Expiry Date**
+- Password expiration policies ensure that users update their passwords regularly to maintain security. Configuring password expiry helps prevent unauthorized access due to old or compromised passwords.
+
+###### **Check the current password expiry settings for a user:** `chage -l <username>`
+
+###### **Check system-wide default settings:** `cat /etc/login.defs | grep PASS_`
+
+<br/>
+
+**💡 Steps to Configure Password Expiry Date :**
+
+###### **Configure System-Wide Password Expiry Settings, Modify the `/etc/login.defs` file:** `sudo nano /etc/login.defs`
+```
+# Set the following values:  
+PASS_MAX_DAYS   90   # Maximum days before password expires  
+PASS_MIN_DAYS   10   # Minimum days before password can be changed  
+PASS_MIN_LEN    8    # Minimum password length  
+PASS_WARN_AGE   7    # Warn users 7 days before password expires  
+```
+
+  <img src="https://github.com/user-attachments/assets/8d138cc4-1309-490d-96f3-264880fd7ae9" alt="fdisk command output" width="650px"></a>
+  <br>
+  
+<br/>
+
+> Set Default User Account Settings 
+> - We Can Set Default Inactive Time, User Shell, etc from these file.
+
+> Password Inactive <br/> 
+> - Specifies the number of days after password expiration that the account becomes inactive.
+> - `INACTIVE=-1` means, account never become an inactive anytime user can login and change there password.
+
+> Modify "/etc/default/useradd": `sudo nano /etc/default/useradd` 
+
+  <img src="https://github.com/user-attachments/assets/f2c19344-93fe-4d2f-979a-9fc4de8bce33" alt="fdisk command output" width="650px"></a>
+  <br>
+  
+<br/>
+
+##### **To Check the Password Expiry Policy:** `chage -l loki`
+
+  <img src="https://github.com/user-attachments/assets/eaad2df6-45fa-4aed-a6b6-1f1a33793f7b" alt="fdisk command output" width="650px"></a>
+  <br>
+  
+
+<br/>
+
+---
 
 
 
