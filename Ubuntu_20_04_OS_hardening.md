@@ -1462,6 +1462,185 @@ PASS_WARN_AGE   7    # Warn users 7 days before password expires
 
 ---
 
+**Configure Account Expiry Date Of Temporary Account 👤**
+- Temporary accounts should have a predefined expiration date to prevent unauthorized access after their intended use. This ensures security by automatically disabling accounts after a specified period.
+
+<br/>
+
+**💡 Set Password Expiry for Individual Users :**
+
+###### **Set Account Expiry Date While Creating a User: `useradd -e 2024-01-16 <username>`**
+
+###### **Change Account Expiry Date for an Existing User: `usermod -e 2024-01-16 <username>`**
+
+  <img src="https://github.com/user-attachments/assets/c652d03a-38df-4f0b-97c8-6efbd8dc16b6" alt="fdisk command output" width="650px"></a>
+  <br>
+
+###### **Set Password Expiry Using chage: `chage -E 2024-01-16 -I 4 -m 3 -M 90 -W 4 <username>`**
+
+<br/>
+
+###### **(Additional Commands) Disable Password Expiry for a User (if required): `chage -M -1 <username>`**
+
+
+<br/>
+
+---
+
+**Monitor and Remove Inactive Users**
+- Inactive user accounts can pose security risks if left unattended. Regularly monitoring and removing unused accounts helps prevent unauthorized access and minimizes attack surfaces.
+
+1️⃣ Check Last Login of Users: Shows the last login time of all users. If a user has never logged in, it will display "Never logged in."
+```
+lastlog
+```
+
+2️⃣ Find Inactive Home Directories: Finds home directories that haven't been modified in 90 days (adjust as needed).
+```
+find /home -type d -ctime +90
+```
+
+<br/>
+
+**Steps to Manage Inactive Users:**
+
+> Define an Inactivity Policy
+> - Set a policy that specifies the maximum number of inactive days before an account is disabled.
+> - Document procedures for handling inactive accounts (e.g., notification, grace period, deletion).
+
+
+
+###### **Set Automatic Account Inactivity Lock:**
+> Locks the account if inactive for 30 days. `chage -I 30 <username>`
+
+<br/>
+
+###### **Manually Disable an Inactive Account : `passwd -l <username>`**
+> Locks the account but keeps the data.
+
+<br/>
+
+> Delete Unused User Accounts:
+> - Deletes the user and their home directory permanently. `userdel -r <username>`
+
+<br/>
+
+> Notify Users Before Removal ⚠
+> - Send email alerts to inactive users before account deletion, allowing them to reactivate if necessary.
+
+
+<br/>
+
+---
+
+**Disable Unused System Accounts**
+- System accounts are typically used for running services and do not require interactive login access. Disabling login for unused system accounts helps reduce security risks by preventing unauthorized access.
+
+
+###### **Check if an Account is Locked: `passwd -S <username>`**
+
+<br/>
+
+Steps to Disable Unused System Accounts:
+
+###### **1️⃣ Use nologin Instead of Deleting Accounts**
+> - Instead of deleting system accounts, set their shell to /usr/sbin/nologin to ensure services continue functioning without allowing login.
+> - usermod -s /usr/sbin/nologin <username>
+
+
+###### **2️⃣ Disable a System Account Completely:**
+> - This locks the password, making login impossible. `passwd -l <username>`
+
+
+###### **3️⃣ Monitor Login Attempts for System Accounts**
+> - To check if system accounts are being accessed unexpectedly.
+> - Use `grep "session opened" /var/log/auth.log` (Debian/Ubuntu)
+
+  <img src="https://github.com/user-attachments/assets/9a62c115-ec53-4ce5-9f02-4000e9ec22cf" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+---
+
+**Restrict Use of Empty Passwords**
+ - Empty password fields in /etc/shadow pose a security risk as they allow unauthorized users to log in without authentication. To enhance security, ensure that all user accounts have a password set.
+
+<br/>
+
+###### **Check for empty password fields in /etc/shadow: `awk -F: '($2==""){print $1}' /etc/shadow`**
+
+###### **Restrict accounts with empty passwords:**
+> - Disable login for users with empty passwords: `passwd -l <username>`
+> - Enforce a password policy to prevent creating accounts without passwords.
+> - Force password change for affected users: `passwd <username>`
+
+
+<br/>
+
+###### **🛠️ Testing Purpose (Account with Empty Password)**
+
+###### **Create an account : `useradd -m -d /home/lol -s /bin/bash lol`**
+
+###### **Remove password requirement (by default, accounts are locked with ! in /etc/shadow): `passwd -d lol`**
+
+###### **This will list all accounts with empty passwords: `cat /etc/shadow | awk -F : '($2==""){print $1}'`**
+
+  <img src="https://github.com/user-attachments/assets/b05825c9-19f5-4620-95aa-767f646a51a3" alt="fdisk command output" width="650px"></a>
+  <br>
+
+![---------------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
