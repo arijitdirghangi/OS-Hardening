@@ -2533,6 +2533,10 @@ sudo tail -f /var/log/auth.log  # Debian/Ubuntu
   <img src="https://github.com/user-attachments/assets/5336b7b8-33f9-42b8-b42c-d08d6a31460e" alt="fdisk command output" width="650px"></a>
   <br>
 
+> ⚠ While running Lynis, `ClamAV` was not installed, reason why it's showing `Malware Scanner` as ❌. 
+
+<br/>
+
 > - Verification: `sudo cat /var/log/lynis-report.dat | grep -i "suggestion"`
 > - It will lists misconfigurations found by Lynis.
 
