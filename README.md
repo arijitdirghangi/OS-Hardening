@@ -1,15 +1,21 @@
-# OS-Hardening
+### What is OS Hardening ? 
+- OS Hardening refers to the process of securing an operating system by minimizing its attack surface. This involves: 
+>  - Removing unnecessary services, packages, and dependencies to reduce potential security risks.
+>  - Closing unused ports to prevent unauthorized access.
+>  - Using minimal base images to limit vulnerabilities and reduce exposure.
 
+<br/>
 
+> I’ve created a basic OS Hardening checklist that covers essential security practices for Windows 11 and RHEL/Ubuntu systems. <br/>
+> For now, I’ve focused on implementing and testing the hardening steps specifically on Ubuntu.
+
+> The checklist includes practical steps I’ve performed, verified, and documented.
+> You can find the detailed breakdown in the sections below:
+
+---
 
 ### Table of Contents
 
-- **[Introduction](#introduction)**
-  * [Status](#status)
-  * [Todo](#todo)
-  * [Prologue](#prologue)
-  * [Levels of priority](#levels-of-priority)
-  * [OpenSCAP](#openscap)
 - **[Preparation and Installation 🛡️](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#preparation-and-installation-%EF%B8%8F)**
   * [Protecting a Newly Installed Machine from Network Threats](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#protecting-a-newly-installed-machine-from-network-threats--)
   * [Set a BIOS/Firmware Password 🔒](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#set-a-biosfirmware-password--)
@@ -17,7 +23,7 @@
   * [Disable USB Usage](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#disable-usb-usage)
   * [Use the latest version of Ubuntu possible](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#use-the-latest-version--of-ubuntu)
   * [Lock Physical Console Access](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#lock-physical-console-access-)
-- **[Filesystem Configuration](#filesystem-configuration-)**
+- **[Filesystem Configuration 📁](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#filesystem-configuration-)**
   * [Create a separate partition with the `nodev`, `nosuid`, and `noexec` options set for `/tmp`](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#create-a-separate-partition-with-the-nodev-nosuid-and-noexec-options-set-for-tmp--)
   * [Create separate partitions for `/var`, `/var/log`, `/var/log/audit`, and `/home`](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#create-separate-partitions-for-var-varlog-varlogaudit-and-home-)
   * [Bind mount /var/tmp to /tmp ](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#bind-mount-vartmp-to-tmp-)
