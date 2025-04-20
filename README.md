@@ -9,8 +9,7 @@
 > I’ve created a basic OS Hardening checklist that covers essential security practices for Windows 11 and RHEL/Ubuntu systems. <br/>
 > For now, I’ve focused on implementing and testing the hardening steps specifically on Ubuntu.
 
-> The checklist includes practical steps I’ve performed, verified, and documented.
-> You can find the detailed breakdown in the sections below:
+> The checklist includes practical steps I’ve performed, verified, and documented. You can find the detailed breakdown in the sections below:
 
 <br/>
 
