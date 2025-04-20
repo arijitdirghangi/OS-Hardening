@@ -1502,7 +1502,7 @@ find /home -type d -ctime +90
 
 <br/>
 
-**Steps to Manage Inactive Users:**
+**💡 Steps to Manage Inactive Users:**
 
 > Define an Inactivity Policy
 > - Set a policy that specifies the maximum number of inactive days before an account is disabled.
@@ -1545,7 +1545,7 @@ find /home -type d -ctime +90
 
 <br/>
 
-Steps to Disable Unused System Accounts:
+**💡 Steps to Disable Unused System Accounts:**
 
 ###### **1️⃣ Use nologin Instead of Deleting Accounts**
 > - Instead of deleting system accounts, set their shell to /usr/sbin/nologin to ensure services continue functioning without allowing login.
@@ -1598,17 +1598,207 @@ Steps to Disable Unused System Accounts:
 
 ![---------------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png)
 
+### Network Security 🛡️
+
+#### **Restrict Service Access to Authorized Users via Firewalls & Controls**
+- Restrict access to services running on the host by allowing only authorized users or systems to connect. This can be achieved using firewalls, access control lists (ACLs), or security policies.
+
+  <br/>
+
+**💡 Steps to Implement:**
+
+###### **Use a Firewall (UFW: Uncomplicated Firewall) to Restrict Access**
+> Installing UFW `apt install ufw -y`
+
+> Creating Rules in `UFW`
+```
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+
+sudo ufw allow ssh
+sudo ufw allow http
+sudo ufw allow https
+```
+
+> Allowing/Denying Specific IPs
+````
+sudo ufw allow from <specific-ip> 
+sudo ufw deny from <malicious-ip> 
+````
+
+> Allowing Traffic From Specific IP/CIDR to Specific Port
+```
+sudo ufw allow from 10.20.30.5 to any port 22
+sudo ufw allow from 10.20.30.1/24 to any port 22 # | Make Sure Ip-address is Static
+sudo ufw allow from 192.168.1.0/24 to any port 3306 proto tcp
+```
+
+  <img src="https://github.com/user-attachments/assets/680ea3ad-9ee5-41f6-a358-52e79b12e1e0" alt="fdisk command output" width="650px"></a>
+  <br>
+
+> Allowing Specific Port Ranges:
+```
+sudo ufw allow 1000:2000/tcp
+```
+
+> To Check number of these rules are: `sudo ufw status numbered`
+
+> To Delete Any Rule: `sudo ufw delete <rull-no>`
+
+> Checking Logs for Blocked Requests: `sudo cat /var/log/ufw.log | grep "BLOCK"`
+
+<br/>
+
+**💡 Limit Access Using TCP Wrappers (if applicable)** 
+> - Modify `/etc/hosts.allow` and `/etc/hosts.deny` to restrict access.
+> - Example: Allow only 192.168.1.100 to use SSH (sshd: 192.168.1.100)
+> - Deny all others: `sshd: ALL`
+
+<br/>
+
+**💡 Configure Application-Specific Access Control**
+> - Some services, like Apache, MySQL, or PostgreSQL, have built-in access controls.
+> - Example (MySQL): Restrict access to specific IPs:
+```
+CREATE USER 'user'@'192.168.1.100' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON dbname.* TO 'user'@'192.168.1.100';
+```
+
+<br/>
+
+**💡 Implement Role-Based Access Control (`RBAC`)**
+> - Use SELinux or AppArmor to restrict service access based on roles.
+
+<br/>
+
+---
+
+#### **Disable IP forwarding**
+- IP forwarding allows a system to route network traffic between interfaces, which is unnecessary for most standalone servers and can be a security risk if enabled unintentionally.
+
+<br/>
+
+**💡 Steps to Disable IP Forwarding:**
+
+###### **Temporarily Disable IP Forwarding (Until Reboot)**
+```
+sudo sysctl -w net.ipv4.ip_forward=0
+sudo sysctl -w net.ipv6.conf.all.forwarding=0
+```
+
+###### **Permanently Disable IP Forwarding**
+> Open the configuration file: `sudo nano /etc/sysctl.conf`
+> Add or modify the following lines: 
+```
+net.ipv4.ip_forward = 0
+net.ipv6.conf.all.forwarding = 0
+```
+
+  <img src="https://github.com/user-attachments/assets/1584251e-b4ea-4d17-b117-15d538c1b787" alt="fdisk command output" width="650px"></a>
+  <br>
+
+> Apply changes: `sudo sysctl -p`
+
+  <img src="https://github.com/user-attachments/assets/b9fb4827-1bf7-4209-9b14-d1c424f10328" alt="fdisk command output" width="650px"></a>
+  <br>
+
+> Verify the Configuration
+```
+cat /proc/sys/net/ipv4/ip_forward
+cat /proc/sys/net/ipv6/conf/all/forwarding
+```
+> - If the output is `0`, IP forwarding is disabled.
+
+  <img src="https://github.com/user-attachments/assets/8df28588-2b42-46f4-a8fb-70dce2595d37" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+---
+
+#### **Disable Send Packet Redirects**
+- Packet redirects allow the system to inform other devices about better routes for packets. However, this can be exploited for man-in-the-middle (MITM) attacks, so it's recommended to disable it unless explicitly required.
 
 
+**💡 Steps to Disable Send Packet Redirects:**
+> Permanently Disable Packet Redirects
+> - Open the configuration file: `sudo nano /etc/sysctl.conf`
+> - Add or modify the following lines:
+```
+net.ipv4.conf.all.send_redirects = 0
+net.ipv4.conf.default.send_redirects = 0
+```
+  <img src="https://github.com/user-attachments/assets/ec441e7a-f822-4167-82e3-00ae7cba9827" alt="fdisk command output" width="650px"></a>
+  <br>
+
+> Apply changes: `sudo sysctl -p`
+
+  <img src="https://github.com/user-attachments/assets/783f1677-b0df-4290-a19a-e7bb12be7a0d" alt="fdisk command output" width="650px"></a>
+  <br>
+
+> Verify the Configuration 
+```
+cat /proc/sys/net/ipv4/conf/all/send_redirects
+cat /proc/sys/net/ipv4/conf/default/send_redirects
+```
+> - If the output is `0`, packet redirects are disabled.
+
+  <img src="https://github.com/user-attachments/assets/62025c9c-1feb-40a1-8958-76a05e1dc786" alt="fdisk command output" width="650px"></a>
+  <br>
 
 
+###### **For Temporary purpose (Until Reboot), RUN the following command**
+```
+sudo sysctl -w net.ipv4.conf.all.send_redirects=0
+sudo sysctl -w net.ipv4.conf.default.send_redirects=0
+```
+
+<br/>
+
+---
+
+#### **Disable Source Routed Packet Acceptance**
+- Source-routed packets allow the sender to specify the route the packet should take, which can be exploited for spoofing or man-in-the-middle (MITM) attacks. Disabling this helps prevent security risks.
+
+<br/>
 
 
+**💡 Steps to Disable Source Routed Packet Acceptance :**
+
+###### **Permanently Disable Source Routing:**
+> - Open the configuration file: `sudo nano /etc/sysctl.conf`
+> - Add or modify the following lines:
+```
+net.ipv4.conf.all.accept_source_route = 0
+net.ipv6.conf.all.accept_source_route = 0
+net.ipv4.conf.default.accept_source_route = 0
+net.ipv6.conf.default.accept_source_route = 0
+```
+
+  <img src="https://github.com/user-attachments/assets/abf44834-422c-418f-9db3-b9ecadc03814" alt="fdisk command output" width="650px"></a>
+  <br>
+
+> Apply changes: `sudo sysctl -p`
+
+  <img src="https://github.com/user-attachments/assets/abc736a9-f968-4100-9be5-440390c571ea" alt="fdisk command output" width="650px"></a>
+  <br>
 
 
+> Verify the Configuration:
+```
+cat /proc/sys/net/ipv4/conf/all/accept_source_route
+cat /proc/sys/net/ipv4/conf/default/accept_source_route
+cat /proc/sys/net/ipv6/conf/all/accept_source_route
+cat /proc/sys/net/ipv6/conf/default/accept_source_route
+```
+> - If the output is `0`, source-routed packet acceptance is disabled.
 
+<br/>
 
+---
 
+#### **Disable ICMP Redirect Acceptance**
+- ICMP redirects are used by routers to inform hosts of a better route. However, attackers can exploit this to alter network routes maliciously. Disabling ICMP redirect acceptance enhances security.
 
 
 
