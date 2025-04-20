@@ -1370,7 +1370,7 @@ EOF
 
 ---
 
-### **Configure Account Lockout Policy 🔒**
+#### **Configure Account Lockout Policy 🔒**
 - The account lockout policy helps protect against brute-force attacks by locking a user account after multiple failed login attempts. This reduces the risk of unauthorized access.
 
 
