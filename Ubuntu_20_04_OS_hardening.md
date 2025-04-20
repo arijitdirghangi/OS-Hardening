@@ -1513,6 +1513,10 @@ find /home -type d -ctime +90
 ###### **Set Automatic Account Inactivity Lock:**
 > Locks the account if inactive for 30 days. `chage -I 30 <username>`
 
+  <img src="https://github.com/user-attachments/assets/889409d3-d129-488e-9c7e-250fa5a6ea96" alt="fdisk command output" width="650px"></a>
+  <br>
+
+
 <br/>
 
 ###### **Manually Disable an Inactive Account : `passwd -l <username>`**
@@ -1546,6 +1550,9 @@ Steps to Disable Unused System Accounts:
 ###### **1️⃣ Use nologin Instead of Deleting Accounts**
 > - Instead of deleting system accounts, set their shell to /usr/sbin/nologin to ensure services continue functioning without allowing login.
 > - usermod -s /usr/sbin/nologin <username>
+
+  <img src="https://github.com/user-attachments/assets/b1faee6a-c106-448e-9b42-ec05bb515ad3" alt="fdisk command output" width="650px"></a>
+  <br>
 
 
 ###### **2️⃣ Disable a System Account Completely:**
