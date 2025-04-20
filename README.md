@@ -14,7 +14,7 @@
 
 ---
 
-### Table of Contents
+### 📚 Table of Contents
 
 - **[Preparation and Installation 🛡️](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#preparation-and-installation-%EF%B8%8F)**
   * [Protecting a Newly Installed Machine from Network Threats](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#protecting-a-newly-installed-machine-from-network-threats--)
