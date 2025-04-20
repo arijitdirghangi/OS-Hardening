@@ -78,12 +78,8 @@
   * [Enable and Configure SELinux](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#enable-and-configure-selinux)
   * [Disable IPv6 if Not Needed](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#disable-ipv6-if-not-needed)
   * [Enable Address Space Layout Randomization (`ASLR`)](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#enable-address-space-layout-randomization-aslr)
-  * []()
-  * []()
-  * []()
-
 - **[Access]()**
-- **[Access]()**
+  * []()
 - **[Access]()**
 
 
