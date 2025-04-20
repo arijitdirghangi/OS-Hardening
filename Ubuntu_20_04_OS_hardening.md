@@ -2053,8 +2053,6 @@ dmesg
 
 <br/>
 
----
-
 ![---------------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png)
 
 ### Remote Access and Secure Communication 🤖
