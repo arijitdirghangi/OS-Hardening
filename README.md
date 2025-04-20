@@ -12,6 +12,13 @@
 > The checklist includes practical steps I’ve performed, verified, and documented.
 > You can find the detailed breakdown in the sections below:
 
+<br/>
+
+> 📥 You can download the OS Hardening checklists in Excel format:
+> 
+> - **[🐧 Linux OS Hardening Checklist](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Linux%20OS%20Hardening%20Checklist.xlsx)**  
+> - **[🪟 Windows OS Hardening Checklist](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Windows%20OS%20Hardening%20Checklist.xlsx)**
+
 ---
 
 ### 📚 Table of Contents
