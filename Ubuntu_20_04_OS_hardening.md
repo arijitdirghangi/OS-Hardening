@@ -1906,24 +1906,749 @@ cat /proc/sys/net/ipv4/icmp_ignore_bogus_error_responses
 
 ---
 
+#### **Enable TCP/SYN Cookies**
+- Enabling TCP SYN cookies helps protect against SYN flood attacks, a type of DoS attack that overwhelms a system by sending excessive SYN requests.
+
+<br/>
+
+**💡 Steps to Enable TCP SYN Cookies :**
+
+> **Permanently Enable TCP SYN Cookies**
+> - Open the sysctl configuration file: `sudo nano /etc/sysctl.conf`
+> - Add or modify the following line:
+```
+net.ipv4.tcp_syncookies = 1
+```
+
+> Apply changes: `sudo sysctl -p`
+
+  <img src="https://github.com/user-attachments/assets/87f522df-d6ea-434a-a826-924822d2c466" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+> Verify the Configuration
+```
+cat /proc/sys/net/ipv4/tcp_syncookies
+```
+> - If the output is `1`, TCP SYN Cookies are enabled.
+
+
+<br/>
+
+---
+
+#### **Close Unused Open Ports**
+- Closing unused ports helps reduce the attack surface and enhances system security.
+
+<br/>
+
+**💡Steps to Identify and Close Unused Open Ports :**
+
+> **Check Listening Ports**
+```
+netstat -tulnp    # For older systems  
+ss -tulnp         # For modern systems
+```
+
+```
+t → TCP
+u → UDP
+l → Listening
+n → Show numerical addresses
+p → Show process name
+```
+
+
+> **Identify Unused Services**
+> - Look for services you don’t need and disable them.
+> - Example output: `tcp LISTEN 0 128 0.0.0.0:23 0.0.0.0:* 1234/telnet`
+> - This means telnet is running on port 23, which is insecure.
+
+<br/>
+
+> **Disable/Stop Unnecessary Services**
+```
+sudo systemctl stop telnet  
+sudo systemctl disable telnet 
+```
+
+<br/>
+
+> **Block Unwanted Ports via Firewall (UFW Example)**
+```
+sudo ufw deny 23   # Block Telnet (port 23)
+sudo ufw deny 21   # Block FTP (port 21)
+```
+
+<br/>
+
+> **Verify Closed Ports: `ss -tulnp | grep LISTEN`**
+
+  <img src="https://github.com/user-attachments/assets/4fb5e650-58b5-411a-9345-a561f3657583" alt="fdisk command output" width="650px"></a>
+  <br>
+
+> ⚠ Ensure only necessary ports are open.
+
+<br/>
+
+---
+
+#### **Log Suspicious Packets (`log_martians`)**
+
+> **🔍 What Are "Martian" Packets?**
+- `Martian packets` are IP packets that have bogus or impossible source addresses — such as:
+> - Private IPs coming from the public internet
+> - IP addresses that should never appear on your interface (e.g., loopback or reserved addresses)
+> - Packets with bad routing or spoofed origins
+
+<br/>
+
+> These could be a sign of:
+> - Misconfigured devices
+> - Network scanning
+> - IP spoofing
+> - Malware activity
+
+<br/>
+
+> **🛡️ Why Enable Logging?**
+- Enabling `log_martians` allows the kernel to log these suspicious packets to dmesg or `/var/log/kern.log`. This is very helpful for network forensics and intrusion detection.
+
+**🔧 Steps to Implement:**
+- Add the settings to a custom sysctl config file: `sudo nano /etc/sysctl.conf`
+- Add the following lines:
+```
+net.ipv4.conf.all.log_martians = 1
+net.ipv4.conf.default.log_martians = 1
+```
+
+> Apply the changes: `sudo sysctl --system`
+
+  <img src="https://github.com/user-attachments/assets/49b6b369-ac14-4006-b45a-d7fa96051d48" alt="fdisk command output" width="650px"></a>
+  <br>
+
+
+> 🛠️ Verify It's Active
+```
+sysctl net.ipv4.conf.all.log_martians
+sysctl net.ipv4.conf.default.log_martians
+```
+> Output should look like
+```
+net.ipv4.conf.all.log_martians = 1
+net.ipv4.conf.default.log_martians = 1
+```
+
+<br/>
+
+> 📄 Where Are Logs Stored?*
+> - Martian packet logs appear in: `/var/log/kern.l`
+>
+> OR
+```
+dmesg
+```
+> - Search for keywords like martian or ll header in logs.
+
+<br/>
+
+---
+
+![---------------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png)
+
+### Remote Access and Secure Communication 🤖
+
+
+#### **Secure SSH**
+- While SSH provides a secure channel, its default configuration can leave systems vulnerable. Hardening SSH is crucial for robust security. If SSH is not required, disabling it is the most secure option. Otherwise, modify the `/etc/ssh/sshd_config` file to implement stronger security measures. This includes changing default ports, disabling root login, and configuring key-based authentication.
+
+<br/>
+
+**💡 Steps to Secure SSH:**
+
+> **1. Disable Root User Login Over SSH**
+> - Prevents direct root access, reducing attack vectors.
+> - Edit:  `/etc/ssh/sshd_config`
+> - Set: Remove the `#` and Modify the value `PermitRootLogin no`
+> - Verification: `cat /etc/ssh/sshd_config | grep PermitRootLogin`
+
+
+<br/>
+
+> **2. Restrict SSH Access to Specific Users**
+> - Limits SSH access to only authorized users.
+> - Edit `/etc/ssh/sshd_config`
+> - Add: `AllowUsers user1 user2`
+> - Verification: `cat /etc/ssh/sshd_config | grep AllowUsers`
+
+  <img src="https://github.com/user-attachments/assets/1d64e05a-5fa0-40e1-aaae-e129695f4b47" alt="fdisk command output" width="650px"></a>
+  <br>
+
+> Note ⚠️
+> - If we only allow few specific user on SSH follow the steps:
+> - Generate a new key for `loki`, On your local machine: `ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa_loki`
+
+> Then copy the public key to the server: `ssh-copy-id -i ~/.ssh/id_rsa_loki.pub loki@192.168.0.106`
 
 
 
+> And login with private key: `ssh -i .ssh/id_rsa_loki loki@192.168.0.106`
+
+  <img src="https://github.com/user-attachments/assets/88f28e37-f134-45ba-9fd1-2cd987a92451" alt="fdisk command output" width="650px"></a>
+  <br>
+
+> ⚠️ Before disabling the root user, ensure you have a separate user account with administrative privileges to manage system configurations in the future. 
+
+<br/>
+
+> **3. Change Default SSH Port**
+> - Avoids common brute-force attacks on port 22.
+> - Edit `/etc/ssh/sshd_config`
+> - Change: Port `2222` (or any non-standard port)
+> - Verification: `cat /etc/ssh/sshd_config | grep Port`
+
+<br/>
+
+> **4. Use SSH Keys for Authentication**
+> - Stronger security compared to password-based authentication.
+> - RUNs the following command:
+```
+ # Generate SSH Keys
+ssh-keygen -t rsa
+# Copy Your SSH Keys
+ssh-copy-id user@ip-address
+```
+> - Verification: `ls -l ~/.ssh/`
+
+<br/>
+
+> **5. Disable Password Authentication in SSH**
+> - Forces users to use SSH keys for authentication.
+> - Modify `/etc/ssh/sshd_config` & Set `PasswordAuthentication no`
+> - Verification: `cat /etc/ssh/sshd_config | grep PasswordAuthentication`
+
+<br/>
+
+> **6. Enable Two-Factor Authentication (`2FA`) (Optional but Recommended)**
+> - Adds an extra layer of security.
+> - Insall Google Authenticator:
+```
+sudo apt install libpam-google-authenticator -y
+google-authenticator
+```
+
+  <img src="https://github.com/user-attachments/assets/f7cc4e2c-2169-48a7-8334-5b922a09bbd2" alt="fdisk command output" width="650px"></a>
+  <br>
+
+> - Take a backup of the file: `cp /etc/pam.d/sshd /etc/pam.d/sshd.bak`
+> - Now open in the file in editor: `nano /etc/pam.d/sshd`
+> - Add the following line:
+```
+# Before
+# Standard Un*x authentication.
+@include common-auth
 
 
+#After
+# Standard Un*x authentication.
+@include common-auth
+auth required pam_google_authenticator.so
+```
+
+  <img src="https://github.com/user-attachments/assets/f2fd20b3-bcb3-4bb6-a9d6-f949e7d30baa" alt="fdisk command output" width="650px"></a>
+  <br>
+
+> Now open `/etc/ssh/sshd_config` file in editor
+```
+#Modify the following line
+
+KbdInteractiveAuthentication yes
+UsePAM yes
+```
+
+<br/>
+
+> **7. Limit SSH Login Attempts**
+> - Helps prevent brute-force attacks.
+> - Edit `/etc/ssh/sshd_config` & Set `MaxAuthTries 3`
+> - Verification: `cat /etc/ssh/sshd_config | grep MaxAuthTries`
+
+<br/>
+
+> **8. Disable Empty Passwords & Host-Based Authentication**
+> - Ensures all accounts require authentication.
+> - Edit `/etc/ssh/sshd_config` & Set
+```
+PermitEmptyPasswords no
+IgnoreRhosts yes
+HostbasedAuthentication no
+```
+
+> Verification: `cat /etc/ssh/sshd_config | grep -E 'PermitEmptyPasswords|IgnoreRhosts|HostbasedAuthentication'`
+
+<br/>
+
+> **9. Configure SSH Timeout Settings**
+> - Automatically disconnects idle sessions to prevent misuse.
+> - Modify `/etc/ssh/sshd_config`
+```
+ClientAliveInterval 900
+ClientAliveCountMax 0
+```
+
+> Verification: `cat /etc/ssh/sshd_config | grep -E 'ClientAliveInterval|ClientAliveCountMax'`
+
+<br/>
+
+> **10. Set Strong Encryption Algorithms**
+> - Ensures secure communication over SSH.
+> - Modify `/etc/ssh/sshd_config`: `Ciphers aes256-ctr,aes192-ctr,aes128-ctr`
+
+> Verification: `cat /etc/ssh/sshd_config | grep Ciphers`
+
+<br/>
+
+> **11. Restrict SSH Access Using Firewall**
+> - Prevents unauthorized access from unknown IPs.
+> - Implementation (UFW): `sudo ufw allow from 192.168.1.0/24 to any port 22`
+> - Verification: `sudo ufw status`
+
+<br/>
+
+> **12. SSH's X11 forwarding allows remote GUI applications**
+> - `X11Forwarding no` refers to a setting within the SSH (Secure Shell) server configuration file (/etc/ssh/sshd_config) that disables the ability to forward graphical user interface (GUI) applications over an SSH connection.
+> - Modify `/etc/ssh/sshd_config` & Set `X11Forwarding no`.
+> - Verification: `cat /etc/ssh/sshd_config | grep X11Forwarding`
+
+<br/>
+
+> **13. Ensure Proper Permissions on SSH Config Files**
+> - Prevents unauthorized modifications.
+> - RUNs the following command:
+```
+sudo chown root:root /etc/ssh/sshd_config
+sudo chmod 600 /etc/ssh/sshd_config
+sudo chmod 600 ~/.ssh/*
+```
+
+> - Verification:
+```
+ls -l /etc/ssh/sshd_config
+ls -la ~/.ssh/
+```
+
+<br/>
+
+> **14. Final Steps: Restart & Test SSH Configuration**
+> - Check if we have missed anything or not
+```
+cat /etc/ssh/sshd_config | grep -nE 'X11Forwarding|Ciphers|ClientAliveInterval|ClientAliveCountMax|PermitEmptyPasswords|IgnoreRhosts|HostbasedAuthentication|MaxAuthTries|PasswordAuthentication|Port|AllowUsers|PermitRootLogin'
+
+sudo sshd -t  # Check for syntax errors
+sudo systemctl restart sshd
+```
+
+  <img src="https://github.com/user-attachments/assets/b32683ee-b923-4425-9746-6c0fb508104e" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+---
+
+#### **Use VPNs for Secure Remote Access**
+- Using a VPN for secure remote access ensures that all traffic between the client and the server is encrypted, reducing the risk of interception by attackers.
+
+<br/>
+
+**💡 Steps to Secure Remote Access with a VPN:**
+
+> Choose a Secure VPN Solution
+> - OpenVPN, WireGuard, or IPsec-based VPNs (e.g., StrongSwan) are recommended.
+
+<br/>
+
+> Install and Configure the VPN
+> - Install OpenVPN: `sudo apt install openvpn -y`
+> - Configure VPN settings in `/etc/openvpn/ `
+
+<br/>
+
+> Restrict Access via VPN
+> - Ensure only VPN clients can access SSH and other sensitive services.
+> - Example (UFW): `sudo ufw allow from 10.8.0.0/24 to any port 22 proto tcp`
+
+  <img src="https://github.com/user-attachments/assets/75f8ddb9-6c65-4c53-8adb-492114a6c7d9" alt="fdisk command output" width="650px"></a>
+  <br>
 
 
+> Verify VPN Connectivity
+> - Check VPN status: `systemctl status openvpn`
 
 
+<br/>
 
+![---------------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png)
 
+### Logging and Monitoring ⚠️
 
+#### **Enable System Auditing**
+- System auditing helps track security-relevant events, detect suspicious activity, and maintain compliance with security policies. The auditd service records system events, while ausearch and aureport provide analysis capabilities.
 
+<br/>
 
+**💡 Steps to Enable and Configure Audit Logging:**
 
+> **Install and Enable auditd: `sudo apt install auditd -y`**
+> - Ensure the auditd package is installed.
 
+  <img src="https://github.com/user-attachments/assets/fa08a5a4-ae2f-41e2-899a-59210b68a8f5" alt="fdisk command output" width="650px"></a>
+  <br>
 
+> - Start and enable `auditd` to persist across reboots:
+```
+sudo systemctl enable --now auditd
+sudo systemctl status auditd  # Verify status
+```
 
+  <img src="https://github.com/user-attachments/assets/4d1618e2-2fc8-4e08-81c4-f09839bd0dbc" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+> **Define Audit Rules**
+> - Configure audit rules in `/etc/audit/rules.d/audit.rules` or `/etc/audit/audit.rules`.
+> - Example rules to track critical security events:
+```
+-w /etc/passwd -p wa -k passwd_changes  # Monitor user account modifications  
+-w /etc/shadow -p wa -k shadow_changes  # Track password file changes  
+-w /var/log/auth.log -p wa -k auth_logs # Monitor authentication logs  
+-a always,exit -F arch=b64 -S execve -k exec_monitor # Log all executed commands
+
+# Remove the "#" before adding the rules either it will not work.
+
+sudo mv /etc/audit/rules.d/audit.rules /etc/audit/rules.d/hardening.rules
+
+# Make sure it has the correct permissions:
+sudo chmod 644 /etc/audit/rules.d/hardening.rules
+sudo chown root:root /etc/audit/rules.d/hardening.rules
+```
+
+> - Apply changes: 
+```
+sudo augenrules --load
+sudo auditctl -l  # Check Rule Listed or not
+sudo systemctl restart auditd
+```
+
+  <img src="https://github.com/user-attachments/assets/5608381e-5ed2-43c5-8b6b-495b5fa40213" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+> **Search and Analyze Logs**
+> - Check the audit logs for security events:
+```
+sudo ausearch -i -ts recent    # View recent logs in a readable format
+
+sudo usermod -c "test change" arijit  
+sudo ausearch -k passwd_changes  # Search for specific audit key events 
+```
+
+  <img src="https://github.com/user-attachments/assets/5bd4e27c-1b09-4371-bbde-a18eea8c567c" alt="fdisk command output" width="650px"></a>
+  <br>
+
+> Generate audit reports:
+```
+sudo aureport --auth --summary  # Authentication summary  
+sudo aureport --file            # File access audit report 
+```
+
+  <img src="https://github.com/user-attachments/assets/d9b1a5c3-9223-4170-b1f9-169c3256a05a" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+> **💡 Additional Hardening**
+> - Set audit logs to immutable mode to prevent tampering: `sudo auditctl -e 2 `  
+
+  <img src="https://github.com/user-attachments/assets/345e65a6-5183-4908-ad19-4de6b427f682" alt="fdisk command output" width="650px"></a>
+  <br>
+
+> - Enable remote logging for centralized monitoring using `rsyslog` or `SIEM` tools.
+> - Regularly review audit logs and configure alerts for critical security events.
+
+<br/>
+
+---
+
+#### **Enable Logging for Critical System Files**
+- System logs help track authentication attempts, system errors, and security events. Ensuring proper logging allows for forensic analysis and real-time monitoring.
+
+<br/>
+
+**💡 Steps to Enable and Verify Logging:**
+
+> **Ensure Logging Services Are Running**
+> - Most Linux systems use `rsyslog` or `journald` for logging. Ensure they are installed and running:
+```
+sudo systemctl enable --now rsyslog
+sudo systemctl status rsyslog # Verify rsyslog is active
+```
+
+<br/>
+
+> **Verify Critical Logs Are Being Written**
+> - Check if key log files exist and are being updated: `ls -l /var/log/auth.log /var/log/syslog`
+> - View recent authentication logs (failed/successful login attempts, SSH access): `sudo tail -f /var/log/auth.log` 
+
+  <img src="https://github.com/user-attachments/assets/44304017-9c61-4f25-be4f-33109d6f51da" alt="fdisk command output" width="650px"></a>
+  <br>
+
+> - Check system-wide logs for errors, warnings, and system events: `sudo tail -f /var/log/syslog`
+
+  <img src="https://github.com/user-attachments/assets/16b1590e-6246-45ea-b946-b2c0d71bfe9f" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+> **Configure Log Rotation to Prevent Overflows**
+> - Linux uses `logrotate` to manage log file sizes and retention.
+> - Edit or check `/etc/logrotate.d/rsyslog` to configure log rotation settings: `sudo nano /etc/logrotate.d/rsyslog`
+
+> Example configuration:
+```
+/var/log/syslog {
+      weekly
+      rotate 4
+      compress
+      missingok
+      notifempty
+  }
+```
+
+> - Apply changes: `sudo logrotate -f /etc/logrotate.conf`
+
+<br/>
+
+---
+
+#### **Monitor Login Failures**
+- Monitoring failed login attempts is crucial for detecting brute-force attacks and unauthorized access attempts. faillog helps track and analyze failed login attempts for local user accounts.
+
+<br/>
+
+**💡 Steps to Enable and Verify Login Failure Monitoring :**
+
+> **Check/Display all failed login attempts: `faillog -a`** 
+> - This command lists all users with recorded login failures, including the number of failed attempts and the last failure time.
+
+  <img src="https://github.com/user-attachments/assets/386fc46e-ad6a-4a12-af95-178a72a7965c" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+> **Check a Specific User’s Failed Logins**
+> - To view failed login attempts for a specific user (e.g., username): `faillog -u username`
+
+<br/>
+
+> **Reset Login Failure Count for a User**
+> - If an account is locked due to too many failures, reset its counter: `sudo faillog -r -u username`
+
+<br/>
+
+> **Monitor real-time authentication logs**
+```
+sudo tail -f /var/log/auth.log  # Debian/Ubuntu
+```
+
+<br/>
+
+---
+
+#### **Implement ClamAV For Ubuntu**
+
+> **ClamAV for Ubuntu (Open-Source Anti-Malware Scanner)**  
+> - ClamAV is a free and widely used antivirus tool for detecting malware, trojans, and viruses.
+
+<br/>
+
+> **Installation:**  
+> - Install ClamAV and its daemon: `sudo apt update && sudo apt install clamav clamav-daemon -y `
+> - Update ClamAV Virus Database: `sudo freshclam`  
+
+<br/>
+
+> **Performing a Scan:**  
+> - Scan a specific directory: sudo clamscan -r /home/user  
+> - Scan the entire system (may take time): sudo clamscan -r / --exclude-dir="^/sys|^/proc|^/dev" 
+
+<br/>
+
+> **Enable ClamAV Auto-Scanning:**  
+> - Edit ClamAV scheduling: sudo nano /etc/clamav/clamd.conf 
+> - Ensure `ScanOnAccess yes` is set for real-time scanning.
+> - Restart ClamAV Service: `sudo systemctl restart clamav-daemon`  
+
+<br/>
+
+> **Check ClamAV is working or not**
+> - Check ClamAV service status: `sudo systemctl status clamav-daemon`
+> - Review scan logs: `sudo cat /var/log/clamav/clamav.log`   
+
+<br/>
+
+> **💡 Additional Recommendations:**  
+> - Automate ClamAV scans using cron jobs: `echo "0 2 * * * root clamscan -r /home/user" | sudo tee -a /etc/crontab`  
+
+<br/>
+
+> **🔗 Reference:**
+> - https://github.com/Cisco-Talos/clamav
+  
+<br/>
+
+----
+
+#### **Scanning for Misconfigurations & Vulnerabilities**
+- Regularly scanning for security misconfigurations and vulnerabilities helps identify weaknesses before attackers exploit them.
+
+<br/>
+
+**💡 Steps to Configure Lynis/OpenVAS:**
+
+> **Install & Use Lynis (Lightweight Security Audit for Linux)**
+> - Lynis is a security auditing tool that scans for misconfigurations.
+
+> Install Lynis: `sudo apt install lynis -y`
+> Run a full security audit: `sudo lynis audit system`
+
+  <img src="https://github.com/user-attachments/assets/03b25185-8557-4b82-856b-4e1acac77a0d" alt="fdisk command output" width="650px"></a>
+  <br>
+
+> - Provides security recommendations for system hardening.
+> - Results are saved in `/var/log/lynis.log`
+
+  <img src="https://github.com/user-attachments/assets/5336b7b8-33f9-42b8-b42c-d08d6a31460e" alt="fdisk command output" width="650px"></a>
+  <br>
+
+> - Verification: `sudo cat /var/log/lynis-report.dat | grep -i "suggestion"`
+> - It will lists misconfigurations found by Lynis.
+
+<br/>
+
+> **Scan for Vulnerabilities Using OpenVAS (Full-Featured Scanner)**
+- OpenVAS (by Greenbone) is a comprehensive vulnerability scanner.
+
+> Install OpenVAS (Greenbone Community Edition): `sudo apt install openvas -y`
+> Start the OpenVAS scanner:
+```
+sudo systemctl start gvmd
+sudo systemctl start ospd-openvas
+```
+
+> Access the Web Interface:
+> - Open browser: https://<your-server-ip>:9392/
+> - Default login: admin / <auto-generated password>
+> - Configure & run a full vulnerability scan.
+
+<br/>
+
+> After scanning, check reports in `/var/lib/openvas/report/`
+
+<br/>
+
+![---------------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png)
+
+### Kernel Hardening
+
+#### Enable and Configure SELinux
+- SELinux is a powerful Mandatory Access Control (MAC) system integrated into the Linux kernel. It enforces security policies that restrict user and process permissions beyond traditional Unix permissions, significantly reducing the impact of misconfigurations or service compromises.
+
+<br/>
+
+**💡 Steps to Implement SELinux:**
+
+> **Check Current SELinux Status: `sestatus`** 
+
+> **If it's not install, installed it:**
+```
+sudo apt install selinux-basics selinux-policy-default -y
+apt install policycoreutils -y
+```
+
+> Set SELinux to Enforcing Mode
+> Edit the SELinux configuration file: `sudo nano /etc/selinux/config`
+> Update the following line:
+```
+SELINUX=enforcing
+```
+
+> Apply Changes
+> - If SELinux was disabled, you’ll need to reboot for the change to take effect: `sudo reboot`
+> - If it was already in permissive mode, you can enable enforcing mode without reboot: `sudo setenforce 1`
+> - Verify the Change: `sestatus`
+
+<br/>
+
+---
+
+#### **Disable IPv6 if Not Needed**
+- Disabling IPv6 reduces the attack surface and prevents unintended network exposure if your system does not require it. This is useful for environments where only IPv4 is used.
+
+**Disable IPv6 if Not Needed:**
+> Modify `/etc/sysctl.conf` or create a new file in `/etc/sysctl.d/`
+```
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+net.ipv6.conf.eth0.disable_ipv6 = 1
+```
+
+  <img src="https://github.com/user-attachments/assets/7d70a279-cd38-48f8-a36a-41daf27ab09d" alt="fdisk command output" width="650px"></a>
+  <br>
+
+> Apply the changes immediately without rebooting: `sudo sysctl -p /etc/sysctl.conf`
+
+  <img src="https://github.com/user-attachments/assets/e677c81b-23b0-4d1b-8ec7-6575726b07af" alt="fdisk command output" width="650px"></a>
+  <br>
+
+> Check if IPv6 is disabled in sysctl: `sysctl -a | grep disable_ipv6`
+
+  <img src="https://github.com/user-attachments/assets/c28e4730-2943-4d32-9af4-727a74df3d39" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+---
+
+#### **Enable Address Space Layout Randomization (ASLR)**
+- ASLR increases security by randomizing memory addresses used by system processes, making it harder for attackers to predict memory locations for exploits like buffer overflows.
+
+<br/>
+
+**💡 Steps to Enable ASLR:**
+
+> **Permanently enable it (persist across reboots):**
+> - Edit your sysctl config (either of these files):
+```
+sudo nano /etc/sysctl.conf
+# OR
+sudo nano /etc/sysctl.d/99-hardening.conf
+```
+
+> Add the following line: `kernel.randomize_va_space = 2`
+> Then apply the change: `sudo sysctl -p /etc/sysctl.conf`
+
+<br/>
+
+**💡 Steps for Verification:**
+> `sysctl -a | grep kernel.randomize_va_space` (Check if ASLR is enabled)
+> `cat /etc/sysctl.conf | grep kernel.randomize_va_space` (Ensure persistence across reboots)
+
+  <img src="https://github.com/user-attachments/assets/d029ecd7-c968-48cb-b88c-c349eb2aec7c" alt="fdisk command output" width="650px"></a>
+  <br>
 
 
 ![---------------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/aqua.png)
