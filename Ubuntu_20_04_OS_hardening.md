@@ -1413,7 +1413,7 @@ auth sufficient pam_faillock.so authsucc
 
 ----
 
-**Configure Password Expiry Date**
+#### **Configure Password Expiry Date**
 - Password expiration policies ensure that users update their passwords regularly to maintain security. Configuring password expiry helps prevent unauthorized access due to old or compromised passwords.
 
 ###### **Check the current password expiry settings for a user:** `chage -l <username>`
