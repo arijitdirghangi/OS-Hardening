@@ -31,11 +31,11 @@
   * [Enable Unattended Security Updates on Ubuntu](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#enable-unattended-security-updates-on-ubuntu)
   * [Enable APT GPG Key Verification on Ubuntu](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#enable-apt-gpg-key-verification-on-ubuntu)
 - **[Secure Boot Settings 🔒](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#secure-boot-settings-)**
+  * [Set User/Group Owner to Root, and Permissions to Read and Write for Root Only, on `/boot/grub2/grub.cfg`](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#set-usergroup-owner-to-root-and-permissions-to-read-and-write-for-root-only-on-bootgrub2grubcfg)
   * [Set Boot Loader Password](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#set-boot-loader-password)
 - **[Process Hardening ⚙️](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#process-hardening-%EF%B8%8F)**
   * [Restrict Core Dumps](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#restrict-core-dumps)
   * [Enable Randomized Virtual Memory Region Placement](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#enable-randomized-virtual-memory-region-placement)
-  * [Lock]()
 - **[OS Hardening](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#os-hardening)**
   * [Remove Legacy Services](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#remove-legacy-services)
   * [Remove xinetd/inetd if Not Needed⚙️](https://github.com/arijitdirghangi/OS-Hardening/blob/main/Ubuntu_20_04_OS_hardening.md#remove-xinetdinetd-if-not-needed%EF%B8%8F)
