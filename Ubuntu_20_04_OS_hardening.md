@@ -1462,7 +1462,7 @@ PASS_WARN_AGE   7    # Warn users 7 days before password expires
 
 ---
 
-**Configure Account Expiry Date Of Temporary Account 👤**
+#### **Configure Account Expiry Date Of Temporary Account 👤**
 - Temporary accounts should have a predefined expiration date to prevent unauthorized access after their intended use. This ensures security by automatically disabling accounts after a specified period.
 
 <br/>
@@ -1487,7 +1487,7 @@ PASS_WARN_AGE   7    # Warn users 7 days before password expires
 
 ---
 
-**Monitor and Remove Inactive Users**
+#### **Monitor and Remove Inactive Users**
 - Inactive user accounts can pose security risks if left unattended. Regularly monitoring and removing unused accounts helps prevent unauthorized access and minimizes attack surfaces.
 
 1️⃣ Check Last Login of Users: Shows the last login time of all users. If a user has never logged in, it will display "Never logged in."
@@ -1537,7 +1537,7 @@ find /home -type d -ctime +90
 
 ---
 
-**Disable Unused System Accounts**
+#### **Disable Unused System Accounts**
 - System accounts are typically used for running services and do not require interactive login access. Disabling login for unused system accounts helps reduce security risks by preventing unauthorized access.
 
 
@@ -1570,7 +1570,7 @@ find /home -type d -ctime +90
 
 ---
 
-**Restrict Use of Empty Passwords**
+#### **Restrict Use of Empty Passwords**
  - Empty password fields in /etc/shadow pose a security risk as they allow unauthorized users to log in without authentication. To enhance security, ensure that all user accounts have a password set.
 
 <br/>
