@@ -1783,7 +1783,6 @@ net.ipv6.conf.default.accept_source_route = 0
   <img src="https://github.com/user-attachments/assets/abc736a9-f968-4100-9be5-440390c571ea" alt="fdisk command output" width="650px"></a>
   <br>
 
-
 > Verify the Configuration:
 ```
 cat /proc/sys/net/ipv4/conf/all/accept_source_route
@@ -1800,48 +1799,112 @@ cat /proc/sys/net/ipv6/conf/default/accept_source_route
 #### **Disable ICMP Redirect Acceptance**
 - ICMP redirects are used by routers to inform hosts of a better route. However, attackers can exploit this to alter network routes maliciously. Disabling ICMP redirect acceptance enhances security.
 
+<br/>
+
+**💡 Steps to Disable ICMP Redirect Acceptance :**
+
+> **Permanently Disable ICMP Redirects**
+> - Open the sysctl configuration file: sudo nano /etc/sysctl.conf
+> - Add or modify the following lines:
+```
+net.ipv4.conf.all.accept_redirects = 0
+net.ipv6.conf.all.accept_redirects = 0
+net.ipv4.conf.default.accept_redirects = 0
+net.ipv6.conf.default.accept_redirects = 0
+```
+
+  <img src="https://github.com/user-attachments/assets/18ccec64-e060-4c1e-b58f-a9767bcb605f" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+> Apply changes: `sudo sysctl -p`
+
+  <img src="https://github.com/user-attachments/assets/00542d63-c69f-4a60-840d-afdeb2d8f094" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+> Verify the Configuration
+```
+cat /proc/sys/net/ipv4/conf/all/accept_redirects
+cat /proc/sys/net/ipv4/conf/default/accept_redirects
+cat /proc/sys/net/ipv6/conf/all/accept_redirects
+cat /proc/sys/net/ipv6/conf/default/accept_redirects
+```
+> - If the output is `0`, ICMP redirect acceptance is disabled.
+
+<br/>
+
+---
+
+#### **Enable Ignore Broadcast Requests**
+- Broadcast requests can be exploited in amplification attacks like Smurf attacks, where an attacker spoofs an IP and sends ICMP echo requests to the broadcast address, causing a flood of responses. Enabling ignore broadcast requests mitigates this risk.
+
+<br/>
+
+**💡 Steps to Enable Ignore Broadcast Requests :**
+
+> **Permanently Ignore Broadcast Requests**
+> - Open the sysctl configuration file: sudo nano /etc/sysctl.conf
+> - Add or modify the following line:
+```
+net.ipv4.icmp_echo_ignore_broadcasts = 1
+```
+
+<br/>
+
+> Apply changes: `sudo sysctl -p`
+
+  <img src="https://github.com/user-attachments/assets/33e478c2-369a-4155-8e33-4d3397a0f1cc" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+> Verify the Configuration
+```
+cat /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
+```
+> - If the output is `1`, broadcast requests are ignored. 
 
 
+<br/>
+
+---
+
+#### **Enable Bad Error Message Protection**
+- This setting helps protect against malicious ICMP error messages, which can be exploited for reconnaissance or attacks like ICMP source quench DoS.
+
+<br/>
+
+**💡 Steps to Enable Bad Error Message Protection :**
+
+> **Permanently Enable Protection**
+> - Open the sysctl configuration file: `sudo nano /etc/sysctl.conf`
+> - Add or modify the following line:
+```
+net.ipv4.icmp_ignore_bogus_error_responses = 1
+```
+
+<br/>
+
+> Apply changes: `sudo sysctl -p`
+
+  <img src="https://github.com/user-attachments/assets/a6f4dbcf-704f-4cfb-85c4-fc3cf680c7f2" alt="fdisk command output" width="650px"></a>
+  <br>
+
+<br/>
+
+> Verify the Configuration
+```
+cat /proc/sys/net/ipv4/icmp_ignore_bogus_error_responses
+```
+> - If the output is `1`, bad ICMP error message protection is enabled.
 
 
+<br/>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+---
 
 
 
